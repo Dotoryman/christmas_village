@@ -9,6 +9,8 @@ try {
   await page.goto(new URL('../dist-ios/index.html', import.meta.url).href);
   assert.ok(await page.locator('link[rel="icon"]').evaluate(icon => icon.href.startsWith('data:')), 'Offline favicon must be embedded');
   await page.locator('#landscape').evaluate(image => image.decode());
+  await page.getByRole('button', { name: 'Invite the white fox' }).click();
+  await page.locator('#animation[data-fox="walking"]').waitFor();
   await page.getByRole('button', { name: 'Enter the cabin' }).click();
   await page.getByRole('button', { name: 'Tend the fire' }).waitFor();
   await page.locator('#landscape').evaluate(image => image.decode());

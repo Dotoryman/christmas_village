@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.3.0 — 2026-09-30
+
+- A white Arctic fox visits the snowy path with an eight-frame walk cycle,
+  contact shadow and fading pawprints. Touch the path to invite it.
+- Occasional shooting stars; touch the moon to make a wish.
+- Softer snowfall with depth and gusts, continuous chimney smoke and cocoa steam,
+  snow outside the interior window and subtle dust in the firelight.
+- Cached glow textures reduce per-frame work; decorative motion respects system
+  reduced motion and pauses when the page is hidden.
+- Fire displacement stays within the flames; the gift bow shimmers in place.
+
 ## 0.2.1 — 2026-09-30
 
 - Christmas tree SVG favicon and a dedicated 1200×630 sharing image.

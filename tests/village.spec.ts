@@ -21,8 +21,15 @@ test('mobile-first image-only scene and touch interactions', async ({ page }, te
   await activate('Christmas tree lights');
   await expect(page.getByRole('button', { name: 'Christmas tree lights' })).toHaveAttribute('aria-pressed', 'false');
   await activate('Greet the snowman');
+  await activate('Invite the white fox');
+  await expect(page.locator('#animation')).toHaveAttribute('data-fox', 'walking');
+  const foxFrame = await page.locator('#animation').getAttribute('data-fox-frame');
+  await expect.poll(() => page.locator('#animation').getAttribute('data-fox-frame')).not.toBe(foxFrame);
+  await activate('Make a wish');
+  await expect(page.locator('#animation')).toHaveAttribute('data-star', 'streak');
   await activate('Enter the cabin');
   await expect(page.locator('#world')).toHaveAttribute('data-scene', 'inside');
+  await expect(page.locator('#animation')).toHaveAttribute('data-fox', 'hidden');
   await activate('Tend the fire');
   await expect(page.getByRole('button', { name: 'Tend the fire' })).toHaveAttribute('aria-pressed', 'true');
   await activate('Open the gift'); await expect(page.locator('#stage')).toHaveClass('gift-open');
@@ -35,6 +42,10 @@ test('mobile-first image-only scene and touch interactions', async ({ page }, te
 test('keyboard and reduced motion, entire portrait fits screen', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' }); await page.goto('/');
   await expect(page.locator('#animation')).toHaveAttribute('data-motion', 'still');
+  await page.getByRole('button', { name: 'Invite the white fox' }).click();
+  await page.getByRole('button', { name: 'Make a wish' }).click();
+  await expect(page.locator('#animation')).toHaveAttribute('data-fox', 'still');
+  await expect(page.locator('#animation')).toHaveAttribute('data-star', 'still');
   const frame = await page.locator('#animation').evaluate((canvas: HTMLCanvasElement) => canvas.toDataURL());
   await page.waitForTimeout(150);
   expect(await page.locator('#animation').evaluate((canvas: HTMLCanvasElement) => canvas.toDataURL())).toBe(frame);

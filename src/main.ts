@@ -20,7 +20,7 @@ let actionSerial = 0;
 const stateKey = (id: string) => `${scene}:${id}`;
 const animationState: AnimationState = {
   scene, lit: id => lightStates.get(stateKey(id)) ?? true,
-  cocoaUntil: 0, snowmanUntil: 0, reduced: media.matches,
+  cocoaUntil: 0, reduced: media.matches,
 };
 const engine = new VillageAnimation(canvas, animationState);
 const imageCache = new Map<string, HTMLImageElement>();
@@ -95,6 +95,8 @@ function interact(target: Target, button: HTMLButtonElement) {
       setTimeout(() => stage.classList.remove('gift-open'), 1800);
     }
   } else if (target.id === 'mug') animationState.cocoaUntil = performance.now() + 3500;
+  else if (target.id === 'fox') engine.inviteFox();
+  else if (target.id === 'moon') engine.makeWish();
   if (animationState.reduced) engine.start();
 }
 function applyMotion() {

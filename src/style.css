@@ -11,7 +11,7 @@ html, body, #app { margin: 0; width: 100%; height: 100%; overflow: hidden; }
 #plates, #animation { pointer-events: none; }
 .switch-plate { opacity: 0; transition: opacity .85s cubic-bezier(.2,.6,.2,1); }
 .switch-plate.off { opacity: 1; }
-.gift-ribbon { clip-path: polygon(11% 63.1%,16% 62.8%,19.6% 64%,19.8% 65%,11% 65%); transform-origin: 16% 64%; }
+.gift-ribbon { clip-path: polygon(11% 63.1%,16% 62.8%,19.6% 64%,19.8% 65%,11% 65%); opacity: 0; }
 .gift-open .gift-ribbon { animation: ribbon 1.8s cubic-bezier(.16,1,.3,1); }
 .target { position: absolute; min-width: 44px; min-height: 44px; margin: 0; padding: 0; border: 0; background: none; outline: none; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; border-radius: 10%; }
 .target:focus-visible { outline: 1px solid #ffe2b3bf; outline-offset: 4px; box-shadow: 0 0 20px #ffdc9320; }
@@ -19,6 +19,6 @@ html, body, #app { margin: 0; width: 100%; height: 100%; overflow: hidden; }
 #fade { position: absolute; inset: 0; pointer-events: none; background: #080e15; opacity: 0; transition: opacity .44s ease; }
 .travelling #fade { opacity: 1; }
 .travelling #stage { transform: translate(-50%, -50%) scale(1.11); }
-@keyframes ribbon { 0%,100% { transform: translateY(0) rotate(0); } 25% { transform: translateY(-7px) rotate(-7deg); } 55% { transform: translateY(-10px) rotate(5deg); } }
+@keyframes ribbon { 0%,100% { opacity: 0; filter: brightness(1); } 25% { opacity: .9; filter: brightness(1.3) drop-shadow(0 0 4px #ffe4ab); } 55% { opacity: .55; filter: brightness(1.1); } }
 .reduced-motion *, .reduced-motion *::before, .reduced-motion *::after { animation: none !important; transition: none !important; }
 .reduced-motion .travelling #stage { transform: translate(-50%, -50%); }
