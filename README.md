@@ -17,12 +17,10 @@ Touch the windows, tree or lantern to switch their lights. Brush snow off the ro
 greet the snowman, then open the cabin door. Inside, tend the fire, light up a gift bow,
 or warm your cocoa. The right-hand door takes you outside again.
 
-A white Arctic fox occasionally walks across the snow, leaving fading pawprints.
-Touch the foreground path to invite it, or touch the moon to make a shooting-star
-wish. Snow drifts at different depths; inside, you can watch flakes through the
-window and delicate steam curling above your cocoa.
-
-<p align="center"><img src="docs/screenshots/mobile-fox.png" width="270" alt="A white Arctic fox visiting the snowy cabin path"></p>
+Touch the snowy pine branches to release a soft cascade, or touch the moon to
+make a shooting-star wish. The outer branches sway gently, a few stars shimmer,
+and small clumps tumble from the roof. Snow drifts at different depths; inside,
+you can watch flakes through the window and soft steam curling above your cocoa.
 
 Generated cinematic backgrounds, clipped light plates and one Canvas loop form
 the scenes. Snow has depth and drift; fire uses the original flame texture with
@@ -80,8 +78,7 @@ controls, reduced motion and the offline bundle.
 
 - `src/scene-config.ts`: artwork, hotspot geometry and light masks.
 - `src/animation.ts`: Canvas snow, fire, steam and particles.
-- `src/fox.ts`: eight-frame Arctic fox walk, ground shadow and fading pawprints.
-- `src/atmosphere.ts`: smoke, steam and snow beyond the cabin window.
+- `src/atmosphere.ts`: branch sway, star shimmer, smoke, steam and window snow.
 - `src/main.ts`: state, asset loading and scene transitions.
 - `ios/`: SwiftUI shell and synchronized offline page.
 - [Image prompts](docs/image-prompts.md), [changelog](CHANGELOG.md), [contributing](CONTRIBUTING.md).

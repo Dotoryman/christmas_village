@@ -88,14 +88,13 @@ function interact(target: Target, button: HTMLButtonElement) {
     const on = !lightStates.get(stateKey(target.id)); lightStates.set(stateKey(target.id), on);
     button.setAttribute('aria-pressed', String(on));
     plates.querySelector<HTMLElement>(`[data-plate="${target.id}"]`)?.classList.toggle('off', !on);
-  } else if (target.id === 'roof' || target.id === 'gift' || target.id === 'snowman') {
+  } else if (target.id === 'roof' || target.id === 'gift' || target.id === 'snowman' || target.id === 'branches') {
     engine.burst(target.id);
     if (target.id === 'gift') {
       stage.classList.remove('gift-open'); void stage.offsetWidth; stage.classList.add('gift-open');
       setTimeout(() => stage.classList.remove('gift-open'), 1800);
     }
   } else if (target.id === 'mug') animationState.cocoaUntil = performance.now() + 3500;
-  else if (target.id === 'fox') engine.inviteFox();
   else if (target.id === 'moon') engine.makeWish();
   if (animationState.reduced) engine.start();
 }

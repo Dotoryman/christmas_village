@@ -1,6 +1,6 @@
 import fireArt from './assets/inside.webp';
-import { FoxVisitor } from './fox';
-import { wisp, windowSnow } from './atmosphere';
+import outsideArt from './assets/outside.webp';
+import { wisp, windowSnow, branchSway, starShimmer } from './atmosphere';
 export type Scene = 'outside' | 'inside';
 export interface AnimationState {
   scene: Scene;
@@ -8,7 +8,7 @@ export interface AnimationState {
   cocoaUntil: number;
   reduced: boolean;
 }
-type Particle = { x: number; y: number; vx: number; vy: number; life: number; age: number; size: number; kind: 'snow' | 'spark'; phase: number };
+type Particle = { x: number; y: number; vx: number; vy: number; life: number; age: number; size: number; kind: 'snow' | 'spark' | 'clump'; phase: number; delay?: number };
 type Flake = { x: number; y: number; depth: number; phase: number };
 const random = (a: number, b: number) => a + Math.random() * (b - a);
 
@@ -22,7 +22,7 @@ export class VillageAnimation {
   private time = 0;
   private particles: Particle[] = [];
   private fireImage = new Image();
-  private fox = new FoxVisitor();
+  private outsideImage = new Image();
   private starAge = -11;
   private windUntil = 0;
   private glowSprites = new Map<string, HTMLCanvasElement>();
@@ -32,6 +32,7 @@ export class VillageAnimation {
   constructor(private canvas: HTMLCanvasElement, private state: AnimationState) {
     this.ctx = canvas.getContext('2d', { alpha: true })!;
     this.fireImage.src = fireArt;
+    this.outsideImage.src = outsideArt;
     this.observer = new ResizeObserver(() => this.resize());
     this.observer.observe(canvas);
     document.addEventListener('visibilitychange', this.visibility);
@@ -54,28 +55,31 @@ export class VillageAnimation {
   }
   stop() { cancelAnimationFrame(this.frame); this.frame = 0; }
   reset() { this.particles = []; this.start(); }
-  inviteFox() { if (!this.state.reduced) this.fox.invite(); }
   makeWish() { if (!this.state.reduced) this.starAge = 0; }
   destroy() { this.stop(); this.observer.disconnect(); document.removeEventListener('visibilitychange', this.visibility); }
   private tick = (now: number) => {
-    const dt = this.last ? Math.min((now - this.last) / 1000, .04) : 0;
+    const dt = this.last ? Math.min((now - this.last) / 1000, .12) : 0;
     this.last = now; this.time += dt;
     this.draw(dt);
     this.frame = requestAnimationFrame(this.tick);
   };
-  burst(kind: 'roof' | 'gift' | 'snowman') {
+  burst(kind: 'roof' | 'gift' | 'snowman' | 'branches') {
     if (this.state.reduced) return;
-    if (kind === 'snowman') this.windUntil = this.time + 3;
-    const count = kind === 'roof' ? 95 : kind === 'gift' ? 48 : 24;
+    if (kind === 'snowman' || kind === 'branches') this.windUntil = this.time + 3;
+    const count = kind === 'roof' ? 64 : kind === 'gift' ? 32 : kind === 'branches' ? 40 : 24;
     for (let i = 0; i < count; i++) {
-      const roofX = random(.16, .75);
-      const roofY = .276 + Math.abs(roofX - .53) * .37;
+      // Release from the photographed eaves in staggered small clusters.
+      const eave = [[.16,.427],[.35,.442],[.60,.435],[.71,.456]][i % 4];
+      const clump = (kind === 'roof' || kind === 'branches') && i % 4 === 0;
       this.particles.push({
-        x: kind === 'roof' ? roofX : kind === 'gift' ? random(.13, .30) : random(.81, .93),
-        y: kind === 'roof' ? roofY : kind === 'gift' ? random(.635, .68) : .64,
-        vx: random(-.07, .07), vy: kind === 'roof' ? random(.015, .06) : random(-.15, -.045),
-        life: random(1.2, 2.8), age: 0, size: kind === 'roof' ? random(1.5, 5.5) : random(.8, 2.6),
-        kind: kind === 'gift' ? 'spark' : 'snow', phase: random(0, 7),
+        x: kind === 'roof' ? eave[0] + random(-.025,.025) : kind === 'branches' ? random(.025,.12) : kind === 'gift' ? random(.13, .30) : random(.81, .93),
+        y: kind === 'roof' ? eave[1] + random(-.006,.006) : kind === 'branches' ? random(.12,.30) : kind === 'gift' ? random(.635, .68) : .64,
+        vx: kind === 'roof' ? random(-.018,.018) : kind === 'branches' ? random(.008,.04) : random(-.05, .05),
+        vy: kind === 'roof' || kind === 'branches' ? random(.005,.025) : random(-.12, -.045),
+        life: kind === 'roof' || kind === 'branches' ? random(.9,1.8) : random(1.2,2.4), age: 0,
+        size: clump ? random(2.2,4.3) : random(.6,1.7),
+        kind: clump ? 'clump' : kind === 'gift' ? 'spark' : 'snow', phase: random(0, 7),
+        delay: kind === 'roof' || kind === 'branches' ? random(0,.65) : 0,
       });
     }
     this.particles = this.particles.slice(-240);
@@ -103,14 +107,16 @@ export class VillageAnimation {
   }
   private drawOutside(dt: number) {
     const ctx = this.ctx, t = this.time;
+    if(!this.state.reduced && this.outsideImage.complete && this.outsideImage.naturalWidth) {
+      branchSway(ctx,this.outsideImage,this.width,this.height,t,t<this.windUntil);
+      starShimmer(ctx,this.width,this.height,t);
+    }
     ctx.globalCompositeOperation = 'screen';
     if (this.state.lit('left-window')) this.glow(.275, .505, .08, .055);
     if (this.state.lit('right-window')) this.glow(.67, .515, .07, .055);
     if (this.state.lit('lantern')) this.glow(.20, .698, .065, .09 + Math.sin(t * 3) * .018);
     if (this.state.lit('tree')) this.drawTree(.805, .41, .17, .28);
     ctx.globalCompositeOperation = 'source-over';
-    const fox = this.fox.draw(ctx,this.width,this.height,dt,this.state.reduced);
-    this.canvas.dataset.fox = fox.status; this.canvas.dataset.foxFrame = String(fox.frame);
     if (!this.state.reduced) {
       wisp(ctx,this.width,this.height,.31,.22,.16,t,.8,true);
       this.drawShootingStar(dt);
@@ -167,7 +173,7 @@ export class VillageAnimation {
   }
   private drawInside(dt: number) {
     const ctx = this.ctx, t = this.time;
-    this.canvas.dataset.fox = 'hidden'; this.canvas.dataset.star = 'hidden';
+    this.canvas.dataset.star = 'hidden';
     if(!this.state.reduced) windowSnow(ctx,this.width,this.height,t);
     ctx.globalCompositeOperation = 'screen';
     if (this.state.lit('tree')) this.drawTree(.13, .28, .18, .34);
@@ -190,7 +196,7 @@ export class VillageAnimation {
       this.glow(.425, .563, .065, .03 * boost + .012 * Math.sin(t * 8));
       ctx.globalCompositeOperation = 'source-over';
     }
-    if (!this.state.reduced && Math.random() < dt * 12) this.particles.push({ x: random(.35,.51), y: .56, vx: random(-.013,.013), vy: random(-.10,-.045), life: random(.5,1.3), age: 0, size: random(.5,1.4), kind: 'spark', phase: 0 });
+    if (!this.state.reduced && Math.random() < dt * 2.4) this.particles.push({ x: random(.35,.51), y: .56, vx: random(-.007,.007), vy: random(-.07,-.035), life: random(.5,1.1), age: 0, size: random(.4,.9), kind: 'spark', phase: 0 });
     ctx.restore();
     if (!this.state.reduced) {
       const cocoa = performance.now() < this.state.cocoaUntil ? 1.7 : 1;
@@ -208,10 +214,16 @@ export class VillageAnimation {
     this.particles = this.particles.filter(p => p.age < p.life);
     this.canvas.dataset.particles = String(this.particles.length);
     for (const p of this.particles) {
+      if(p.delay && p.delay>0) {p.delay=Math.max(0,p.delay-dt);continue;}
       p.age += dt; p.x += p.vx * dt; p.y += p.vy * dt;
-      if (p.kind === 'snow') p.vy += .20 * dt;
-      const alpha = Math.max(0, 1 - p.age / p.life);
+      if (p.kind === 'snow' || p.kind === 'clump') p.vy += (p.kind==='clump'?.24:.12) * dt;
+      const alpha = Math.min(1,p.age/.08) * Math.max(0,Math.min(1,(p.life-p.age)/.45));
       const x = p.x * this.width, y = p.y * this.height;
+      if(p.kind==='clump') {
+        this.ctx.save();this.ctx.translate(x,y);this.ctx.rotate(p.phase+p.age*.9);
+        this.ctx.fillStyle=`rgba(225,239,253,${alpha*.64})`;
+        this.ctx.beginPath();this.ctx.ellipse(0,0,p.size*1.2,p.size*.64,0,0,Math.PI*2);this.ctx.ellipse(-p.size*.5,-p.size*.35,p.size*.65,p.size*.55,0,0,Math.PI*2);this.ctx.fill();this.ctx.restore();continue;
+      }
       this.ctx.beginPath(); this.ctx.arc(x, y, p.size, 0, Math.PI * 2);
       this.ctx.fillStyle = p.kind === 'snow' ? `rgba(235,246,255,${alpha * .65})` : `rgba(255,203,106,${alpha})`;
       this.ctx.fill();

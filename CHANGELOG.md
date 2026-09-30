@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.1 — 2026-09-30
+
+- Removed the fox visitor, its hotspot and the sprite from active source assets.
+- Kept the original cinematic portrait artwork and image-only experience.
+- Added subtle outer-pine movement, a branch-touch snow cascade and restrained
+  star shimmer. Roof snow falls in staggered clumps and fine powder.
+- Softer steam and smoke, fewer fireplace embers, and less timing slowdown at
+  lower frame rates. All decorative motion respects reduced motion.
+
 ## 0.3.0 — 2026-09-30
 
 - A white Arctic fox visits the snowy path with an eight-frame walk cycle,
