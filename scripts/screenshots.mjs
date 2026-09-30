@@ -19,6 +19,10 @@ try {
       .getByRole('button', { name: 'Clear frost from the window', exact: true })
       .press('Enter');
     await page.screenshot({ path: `docs/screenshots/${name}-frost.png`, scale: 'css' });
+    await page.getByRole('button', { name: 'Visit the Christmas table', exact: true }).click();
+    await page.getByRole('button', { name: 'Return to the living room', exact: true }).waitFor();
+    await page.waitForTimeout(600);
+    await page.screenshot({ path: `docs/screenshots/${name}-party.png`, scale: 'css' });
     await page.close();
   }
 } finally {

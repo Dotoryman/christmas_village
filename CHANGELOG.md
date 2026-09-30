@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.5.0 — 2026-09-30
+
+- Added a portrait Christmas feast scene with roast turkey, gingerbread, a yule
+  log, festive table settings and candlelight matching the original log cabin.
+- Touch the living-room table to visit; touch the open archway or press Escape
+  to return. Existing room lights and wiped frost are preserved.
+- Added subtle candle glow and two steaming cocoa mugs with touch responses,
+  quieter fireplace ambience, and offline iOS artwork support.
+- Verified the third scene with touch, mouse, keyboard, reduced motion and
+  offline browser checks. Native iOS execution is not verified on Windows.
+
 ## 0.4.1 — 2026-09-30
 
 - Replaced snow drawings with touch-driven powder that briefly scatters and settles,

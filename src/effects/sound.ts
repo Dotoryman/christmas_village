@@ -110,7 +110,11 @@ export class WinterSound {
     if (!this.context) return;
     const t = this.context.currentTime;
     this.wind!.gain.setTargetAtTime(scene === 'outside' ? 0.2 : 0.008, t, 0.65);
-    this.fire!.gain.setTargetAtTime(scene === 'inside' ? 0.16 : 0, t, 0.65);
+    this.fire!.gain.setTargetAtTime(
+      scene === 'inside' ? 0.16 : scene === 'party' ? 0.07 : 0,
+      t,
+      0.65,
+    );
   }
   private stopCrackle() {
     if (this.timer) clearInterval(this.timer);
@@ -121,7 +125,7 @@ export class WinterSound {
     this.timer = setInterval(() => {
       if (
         this.enabled &&
-        this.scene === 'inside' &&
+        this.scene !== 'outside' &&
         this.context?.state === 'running' &&
         Math.random() < 0.6
       )

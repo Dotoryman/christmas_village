@@ -7,6 +7,7 @@ const files = [
   ['.local/artwork/inside-mobile.png', 'src/assets/inside.webp'],
   ['.local/artwork/outside-off.png', 'src/assets/outside-off.webp'],
   ['.local/artwork/inside-off.png', 'src/assets/inside-off.webp'],
+  ['.local/artwork/party.png', 'src/assets/party.webp'],
 ];
 for (const [source, target] of files) {
   try {

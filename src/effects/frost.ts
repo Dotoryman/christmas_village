@@ -164,7 +164,7 @@ export class FrostWindow {
       h = this.height;
     ctx.clearRect(0, 0, w, h);
     this.canvas.dataset.marks = String(this.scene === 'inside' ? this.marks.length : 0);
-    if (this.scene === 'outside') return;
+    if (this.scene !== 'inside') return;
     for (const mark of this.marks) if (mark !== this.active) mark.age += dt;
     this.marks = this.marks.filter((mark) => mark.age < 40);
     if (this.scene === 'inside') {

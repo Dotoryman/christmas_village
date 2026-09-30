@@ -34,6 +34,15 @@ try {
     .getByRole('button', { name: 'Clear frost from the window', exact: true })
     .press('Enter');
   assert.equal(await page.locator('#surfaces').getAttribute('data-marks'), '1');
+  // Verify the third scene and its artwork with the browser completely offline.
+  await page.getByRole('button', { name: 'Visit the Christmas table', exact: true }).click();
+  await page.getByRole('button', { name: 'Return to the living room', exact: true }).waitFor();
+  await page.locator('#landscape').evaluate((image) => image.decode());
+  assert.equal(await page.locator('#world').getAttribute('data-scene'), 'party');
+  await page.getByRole('button', { name: 'Warm the table candlelight', exact: true }).click();
+  await page.getByRole('button', { name: 'Return to the living room', exact: true }).click();
+  await page.getByRole('button', { name: 'Tend the fire' }).waitFor();
+  assert.equal(await page.locator('#surfaces').getAttribute('data-marks'), '1');
   await page.getByRole('button', { name: 'Mute winter sounds', exact: true }).click();
   await page.locator('#sound[data-audio-state="suspended"]').waitFor();
   assert.equal(await page.locator('body').innerText(), '');

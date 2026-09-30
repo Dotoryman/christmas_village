@@ -24,6 +24,8 @@ Open `http://127.0.0.1:5173`. The included WebP artwork is ready to use.
 Effects use normalized portrait coordinates. The shared animation loop pauses
 when hidden and freezes decorative motion when reduced motion is enabled.
 Code comments explain masks, gestures, timing and audio resource ownership.
+The cabin's small table opens the feast scene; its open archway returns to the
+living room. Each scene owns its own hotspots and preserves existing room states.
 
 ## Checks and formatting
 
@@ -55,7 +57,8 @@ secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`. Never commit credent
 
 ## Controls
 
-Tab, Enter and Space operate hotspots; Escape exits the cabin. Shift+Enter starts
+Tab, Enter and Space operate hotspots; Escape returns from the feast to the
+living room, then exits the cabin. Shift+Enter starts
 tree illumination. Enter/Space on the window wipes a path; on foreground snow it
 stirs powder. Reduced motion suppresses powder and instantly lights the tree.
 Sound is initially muted and requires the speaker button.

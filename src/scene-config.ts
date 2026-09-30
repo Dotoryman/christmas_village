@@ -2,6 +2,7 @@ import outside from './assets/outside.webp';
 import inside from './assets/inside.webp';
 import outsideOff from './assets/outside-off.webp';
 import insideOff from './assets/inside-off.webp';
+import party from './assets/party.webp';
 import type { Scene } from './effects/animation';
 // Hotspots and image masks share normalized portrait coordinates (0–100%).
 export type Target = {
@@ -14,8 +15,9 @@ export type Target = {
   light?: boolean;
   mask?: string;
 };
-export const images = { outside, inside };
-export const offImages = { outside: outsideOff, inside: insideOff };
+export const images = { outside, inside, party };
+// The feast has no light-switch masks; its candle glow uses the shared canvas.
+export const offImages = { outside: outsideOff, inside: insideOff, party };
 export const targets: Record<Scene, Target[]> = {
   outside: [
     { id: 'moon', name: 'Make a wish', x: 69, y: 6, w: 16, h: 10 },
@@ -91,5 +93,12 @@ export const targets: Record<Scene, Target[]> = {
     { id: 'mug', name: 'Warm cocoa', x: 51, y: 65.5, w: 9, h: 5 },
     { id: 'exit', name: 'Return to the village', x: 86, y: 36, w: 12, h: 17 },
     { id: 'frost', name: 'Clear frost from the window', x: 61.5, y: 24.5, w: 21, h: 22.5 },
+    { id: 'party-table', name: 'Visit the Christmas table', x: 39, y: 71, w: 26, h: 11 },
+  ],
+  party: [
+    { id: 'living-room', name: 'Return to the living room', x: 2, y: 10, w: 37, h: 27 },
+    { id: 'party-candles', name: 'Warm the table candlelight', x: 36, y: 28, w: 28, h: 19 },
+    { id: 'party-cocoa', name: 'Warm the left festive cocoa', x: 4, y: 55, w: 20, h: 11 },
+    { id: 'party-cocoa-right', name: 'Warm the right festive cocoa', x: 80, y: 61, w: 19, h: 11 },
   ],
 };

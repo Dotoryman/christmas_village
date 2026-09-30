@@ -2,6 +2,16 @@
 
 Tool: built-in image_gen (no CLI/API fallback).
 
+## Christmas table — src/assets/party.webp
+
+Generated with the existing `src/assets/inside.webp` as a style and cabin-continuity
+reference. The new 941×1672 portrait PNG is kept in `.local/artwork/party.png`;
+the runtime WebP is committed. No original room artwork was changed.
+
+Prompt:
+
+> Create one finished background image for an interactive Christmas Village web app. Reference image is STYLE AND CABIN CONTINUITY reference only; create a NEW view of the Christmas party dining table in this same cozy rustic log cabin. Photorealistic cinematic illustration, believable materials and delicious food, warm amber candlelight, rich evergreen/red accents with deep blue winter visible through a small background window. PORTRAIT 9:16 composition; full bleed, no text, no UI, no people, no lettering, no watermark. Camera standing beside the head of a solid oak dining table, slightly elevated looking down the length of table, intimate close view. Table dominates lower two thirds, inviting feast: golden roasted turkey with vegetables center, berry-topped Christmas yule log cake lower right, iced gingerbread cookies lower left, bread, cranberries and two mugs of hot cocoa. Evergreen centerpiece and three elegant lit taper candles around middle upper tabletop, tasteful red napkins, ceramic plates, cutlery, small wrapped gifts and fairy lights. In upper background show same log walls, warm mantel glow and snowy night window. At upper left, a clearly visible OPEN ARCHWAY leading back to the familiar sitting room with red armchair and fireplace, providing an intuitive tappable return path. Keep main food items separated and readable at phone size, accurate perspective, cohesive elegant arrangement, no overcrowding. Create cinematic photograph-like image at 1080x1920 or equivalent 9:16 portrait, close match to reference warmth and detail.
+
 Repository cleanup: runtime images live in `src/assets/` as WebP. The original
 PNG inputs mentioned below are preserved in Git history and the 0.4.0 source
 release archive; the filenames in historical prompts describe their creation.

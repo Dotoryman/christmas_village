@@ -18,11 +18,14 @@ A small world of warm lights and snowy surprises. Take your time.
 - **Let it snow.** Sweep the powder, shake snow from pine branches, and watch it tumble from the roof.
 - **Bring the tree to life.** Hold it to light the branches from bottom to star.
 - **Step inside.** Wipe frost from the window, warm your cocoa, and settle beside the fire.
+- **Join the feast.** Touch the little table to discover a Christmas spread, candlelight and steaming cocoa. The archway brings you back to the living room.
 - **Listen to winter.** Turn on the little speaker for wind, soft snow crunch and crackling wood.
 
 Tap the moon for a shooting-star wish. Come back outside whenever you like.
 
 <p align="center"><img src="docs/screenshots/mobile-frost.png" width="270" alt="A cozy cabin with frost wiped from its window"></p>
+
+<p align="center"><img src="docs/screenshots/mobile-party.png" width="270" alt="A candlelit Christmas table with roast turkey, gingerbread and a yule log"></p>
 
 Made for a phone held upright. Also playable on desktop, with an offline iOS source bundle.
 No accounts, tracking or visible instructions—just a little winter escape.

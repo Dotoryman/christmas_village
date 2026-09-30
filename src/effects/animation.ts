@@ -1,11 +1,12 @@
 import fireArt from '../assets/inside.webp';
 import outsideArt from '../assets/outside.webp';
 import { wisp, windowSnow, branchSway, starShimmer } from './atmosphere';
-export type Scene = 'outside' | 'inside';
+export type Scene = 'outside' | 'inside' | 'party';
 export interface AnimationState {
   scene: Scene;
   lit: (id: string) => boolean;
   cocoaUntil: number;
+  candleUntil: number;
   reduced: boolean;
 }
 type Particle = {
@@ -218,7 +219,8 @@ export class VillageAnimation {
     if (this.width < 1 || this.height < 1) return;
     if (this.treeAge >= 0) this.treeAge += dt;
     if (this.state.scene === 'outside') this.drawOutside(dt);
-    else this.drawInside(dt);
+    else if (this.state.scene === 'inside') this.drawInside(dt);
+    else this.drawParty();
     if (!this.state.reduced) this.drawParticles(dt);
     this.afterDraw(
       this.state.reduced ? 0 : dt,
@@ -393,6 +395,31 @@ export class VillageAnimation {
         this.glow(x, 0.72 - age * 0.39, 0.003, Math.sin(age * Math.PI) * 0.11, '255,219,156');
       }
       ctx.globalCompositeOperation = 'source-over';
+    }
+  }
+  /** Glows sit on the photographed flames; steam rises only from the two mugs.
+   * The feast has its own coordinates, never borrowing the living-room masks. */
+  private drawParty() {
+    const ctx = this.ctx,
+      t = this.time;
+    this.canvas.dataset.star = 'hidden';
+    const boost = performance.now() < this.state.candleUntil ? 1.7 : 1;
+    ctx.globalCompositeOperation = 'screen';
+    for (const [x, y, phase] of [
+      [0.409, 0.334, 0],
+      [0.521, 0.294, 2],
+      [0.589, 0.344, 4],
+    ]) {
+      const flicker = this.state.reduced
+        ? 0
+        : Math.sin(t * 3.1 + phase) * 0.012 + Math.sin(t * 5.7 + phase) * 0.006;
+      this.glow(x, y, 0.039, (0.075 + flicker) * boost);
+    }
+    ctx.globalCompositeOperation = 'source-over';
+    if (!this.state.reduced) {
+      const cocoa = performance.now() < this.state.cocoaUntil ? 1.55 : 1;
+      wisp(ctx, this.width, this.height, 0.162, 0.574, 0.052 * cocoa, t, cocoa);
+      wisp(ctx, this.width, this.height, 0.895, 0.625, 0.052 * cocoa, t + 3, cocoa);
     }
   }
   private drawParticles(dt: number) {

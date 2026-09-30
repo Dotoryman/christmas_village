@@ -164,7 +164,9 @@ body,
   box-shadow: 0 0 20px #ffdc9320;
 }
 .target.enter:hover,
-.target.exit:hover {
+.target.exit:hover,
+.target.party-table:hover,
+.target.living-room:hover {
   background: radial-gradient(ellipse, #ffd59912, transparent 72%);
 }
 #fade {

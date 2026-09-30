@@ -24,6 +24,7 @@ const animationState: AnimationState = {
   scene,
   lit: (id) => lightStates.get(stateKey(id)) ?? true,
   cocoaUntil: 0,
+  candleUntil: 0,
   reduced: media.matches,
 };
 const surfaces = new FrostWindow(document.querySelector<HTMLCanvasElement>('#surfaces')!);
@@ -95,7 +96,11 @@ function render() {
   ambient.style.backgroundImage = `url("${images[scene]}")`;
   world.setAttribute(
     'aria-label',
-    scene === 'outside' ? 'Snowy forest cabin' : 'Warm cabin interior',
+    scene === 'outside'
+      ? 'Snowy forest cabin'
+      : scene === 'inside'
+        ? 'Warm cabin interior'
+        : 'Christmas party table',
   );
   targetLayer.replaceChildren();
   plates.replaceChildren();
@@ -279,8 +284,17 @@ async function travel(next: Scene) {
   busy = true;
   targetLayer.inert = true;
   cancelHold();
-  stage.style.setProperty('--door-x', scene === 'outside' ? '48%' : '92%');
-  stage.style.setProperty('--door-y', scene === 'outside' ? '55%' : '45%');
+  // Zoom toward the object actually used: front door, table or return archway.
+  const origin =
+    scene === 'outside'
+      ? ['48%', '55%']
+      : scene === 'party'
+        ? ['20%', '24%']
+        : next === 'party'
+          ? ['52%', '75%']
+          : ['92%', '45%'];
+  stage.style.setProperty('--door-x', origin[0]);
+  stage.style.setProperty('--door-y', origin[1]);
   world.classList.add('travelling');
   try {
     await Promise.all([
@@ -289,12 +303,14 @@ async function travel(next: Scene) {
       new Promise((resolve) => setTimeout(resolve, media.matches ? 0 : 440)),
     ]);
     scene = next;
+    animationState.cocoaUntil = animationState.candleUntil = 0;
     render();
     world.classList.remove('travelling');
+    targetLayer.inert = false;
     if (keyboardMode)
       targetLayer
         .querySelector<HTMLButtonElement>(
-          `[data-action="${scene === 'inside' ? 'fire' : 'enter'}"]`,
+          `[data-action="${scene === 'inside' ? 'fire' : scene === 'party' ? 'living-room' : 'enter'}"]`,
         )!
         .focus({ preventScroll: true });
     trackAction('travel');
@@ -308,8 +324,14 @@ async function travel(next: Scene) {
 }
 function interact(target: Target, button: HTMLButtonElement) {
   if (busy) return;
-  if (target.id === 'enter' || target.id === 'exit') {
-    void travel(target.id === 'enter' ? 'inside' : 'outside');
+  const routes: Record<string, Scene> = {
+    enter: 'inside',
+    exit: 'outside',
+    'party-table': 'party',
+    'living-room': 'inside',
+  };
+  if (routes[target.id]) {
+    void travel(routes[target.id]);
     return;
   }
   trackAction(target.id);
@@ -331,7 +353,9 @@ function interact(target: Target, button: HTMLButtonElement) {
       stage.classList.add('gift-open');
       setTimeout(() => stage.classList.remove('gift-open'), 1800);
     }
-  } else if (target.id === 'mug') animationState.cocoaUntil = performance.now() + 3500;
+  } else if (target.id === 'mug' || target.id.startsWith('party-cocoa'))
+    animationState.cocoaUntil = performance.now() + 3500;
+  else if (target.id === 'party-candles') animationState.candleUntil = performance.now() + 3500;
   else if (target.id === 'moon') engine.makeWish();
   if (animationState.reduced) engine.start();
 }
@@ -350,6 +374,7 @@ media.addEventListener('change', applyMotion);
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Tab') keyboardMode = true;
   if (event.key === 'Escape' && scene === 'inside') void travel('outside');
+  else if (event.key === 'Escape' && scene === 'party') void travel('inside');
 });
 document.addEventListener('pointerdown', () => {
   keyboardMode = false;
@@ -375,9 +400,13 @@ world.addEventListener('pointerleave', () => {
 });
 render();
 applyMotion();
-// The first scene loads first. Preload the room during idle time.
+// Keep the first view fast; decode indoor artwork during idle time for smooth visits.
 const loadRoom = () => {
-  void Promise.all([preload(images.inside), preload(offImages.inside)]).catch(() => {});
+  void Promise.all([
+    preload(images.inside),
+    preload(offImages.inside),
+    preload(images.party),
+  ]).catch(() => {});
 };
 void preload(images.outside)
   .then(() => {
