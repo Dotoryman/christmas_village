@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.1 — 2026-09-30
+
+- Replaced snow drawings with touch-driven powder that briefly scatters and settles,
+  leaving no artificial lines on the original artwork.
+- Increased outdoor snowfall from 135 to 360 flakes, with more distant flakes and
+  slightly brighter snow while keeping foreground flakes sparse.
+- Simplified the public README around the experience and demo. Moved detailed
+  setup, iOS and deployment instructions to the development guide.
+- Grouped effect modules and release notes, removed duplicate runtime-unneeded
+  artwork and stale screenshots, and added readable formatting and code comments.
+
 ## 0.4.0 — 2026-09-30
 
 - Wipe frost from the cabin's glass panes; it gradually returns without covering

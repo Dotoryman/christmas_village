@@ -1,56 +1,85 @@
 import { test, expect } from '@playwright/test';
 test('mobile-first image-only scene and touch interactions', async ({ page }, testInfo) => {
-  const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/');
   await expect(page).toHaveTitle('Christmas Village');
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await expect(page.locator('body')).toHaveText('');
   await expect(page.locator('header, footer, h1, p')).toHaveCount(0);
   await page.locator('#landscape').evaluate((image: HTMLImageElement) => image.decode());
-  const firstFrame = await page.locator('#animation').evaluate((canvas: HTMLCanvasElement) => canvas.toDataURL());
-  await expect.poll(() => page.locator('#animation').evaluate((canvas: HTMLCanvasElement) => canvas.toDataURL())).not.toBe(firstFrame);
+  const firstFrame = await page
+    .locator('#animation')
+    .evaluate((canvas: HTMLCanvasElement) => canvas.toDataURL());
+  await expect
+    .poll(() =>
+      page.locator('#animation').evaluate((canvas: HTMLCanvasElement) => canvas.toDataURL()),
+    )
+    .not.toBe(firstFrame);
   const activate = async (name: string) => {
     const button = page.getByRole('button', { name, exact: true });
-    if (testInfo.project.name === 'mobile') await button.tap(); else await button.click();
+    if (testInfo.project.name === 'mobile') await button.tap();
+    else await button.click();
   };
   await activate('Left window lights');
-  await expect(page.getByRole('button', { name: 'Left window lights' })).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.getByRole('button', { name: 'Left window lights' })).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  );
   await expect(page.locator('[data-plate="left-window"]')).toHaveCSS('opacity', '1');
   await activate('Brush snow off the roof');
   await expect.poll(() => page.locator('#animation').getAttribute('data-particles')).not.toBe('0');
   await activate('Christmas tree lights');
-  await expect(page.getByRole('button', { name: 'Christmas tree lights' })).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.getByRole('button', { name: 'Christmas tree lights' })).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  );
   await activate('Greet the snowman');
   await expect(page.getByRole('button', { name: /fox/i })).toHaveCount(0);
   await activate('Brush snow off the pine branches');
-  await expect(page.locator('#world')).toHaveAttribute('data-last-action','branches');
+  await expect(page.locator('#world')).toHaveAttribute('data-last-action', 'branches');
   await expect.poll(() => page.locator('#animation').getAttribute('data-particles')).not.toBe('0');
   await activate('Make a wish');
   await expect(page.locator('#animation')).toHaveAttribute('data-star', 'streak');
   await activate('Enter the cabin');
   await expect(page.locator('#world')).toHaveAttribute('data-scene', 'inside');
   await activate('Tend the fire');
-  await expect(page.getByRole('button', { name: 'Tend the fire' })).toHaveAttribute('aria-pressed', 'true');
-  await activate('Open the gift'); await expect(page.locator('#stage')).toHaveClass('gift-open');
-  await activate('Warm cocoa'); await expect(page.locator('#world')).toHaveAttribute('data-last-action', 'mug');
+  await expect(page.getByRole('button', { name: 'Tend the fire' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await activate('Open the gift');
+  await expect(page.locator('#stage')).toHaveClass('gift-open');
+  await activate('Warm cocoa');
+  await expect(page.locator('#world')).toHaveAttribute('data-last-action', 'mug');
   await activate('Return to the village');
   await expect(page.locator('#world')).toHaveAttribute('data-scene', 'outside');
-  await expect(page.getByRole('button', { name: 'Left window lights' })).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.getByRole('button', { name: 'Left window lights' })).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  );
   expect(errors).toEqual([]);
 });
 test('keyboard and reduced motion, entire portrait fits screen', async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: 'reduce' }); await page.goto('/');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
   await expect(page.locator('#animation')).toHaveAttribute('data-motion', 'still');
   await page.getByRole('button', { name: 'Brush snow off the pine branches' }).click();
   await page.getByRole('button', { name: 'Make a wish' }).click();
   await expect(page.locator('#animation')).toHaveAttribute('data-star', 'still');
-  const frame = await page.locator('#animation').evaluate((canvas: HTMLCanvasElement) => canvas.toDataURL());
+  const frame = await page
+    .locator('#animation')
+    .evaluate((canvas: HTMLCanvasElement) => canvas.toDataURL());
   await page.waitForTimeout(150);
-  expect(await page.locator('#animation').evaluate((canvas: HTMLCanvasElement) => canvas.toDataURL())).toBe(frame);
+  expect(
+    await page.locator('#animation').evaluate((canvas: HTMLCanvasElement) => canvas.toDataURL()),
+  ).toBe(frame);
   const bounds = await page.locator('#stage').boundingBox();
   const view = page.viewportSize()!;
-  expect(bounds!.width).toBeLessThanOrEqual(view.width + 1); expect(bounds!.height).toBeLessThanOrEqual(view.height + 1);
+  expect(bounds!.width).toBeLessThanOrEqual(view.width + 1);
+  expect(bounds!.height).toBeLessThanOrEqual(view.height + 1);
   await page.getByRole('button', { name: 'Enter the cabin' }).press('Enter');
   await expect(page.locator('#world')).toHaveAttribute('data-scene', 'inside');
-  await page.keyboard.press('Escape'); await expect(page.locator('#world')).toHaveAttribute('data-scene', 'outside');
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#world')).toHaveAttribute('data-scene', 'outside');
 });

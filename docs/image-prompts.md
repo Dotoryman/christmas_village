@@ -2,6 +2,10 @@
 
 Tool: built-in image_gen (no CLI/API fallback).
 
+Repository cleanup: runtime images live in `src/assets/` as WebP. The original
+PNG inputs mentioned below are preserved in Git history and the 0.4.0 source
+release archive; the filenames in historical prompts describe their creation.
+
 The landscape images were first generated as style references; the portrait images were recomposed with those references and are the active mobile-first assets.
 
 ## Outside reference

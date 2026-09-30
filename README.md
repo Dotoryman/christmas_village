@@ -13,95 +13,33 @@ or menus.
 
 ## Explore
 
-Touch the windows, tree or lantern to switch their lights. Brush snow off the roof,
-greet the snowman, then open the cabin door. Inside, tend the fire, light up a gift bow,
-or warm your cocoa. The right-hand door takes you outside again.
+A small world of warm lights and snowy surprises. Take your time.
 
-Touch the snowy pine branches to release a soft cascade, or touch the moon to
-make a shooting-star wish. The outer branches sway gently, a few stars shimmer,
-and small clumps tumble from the roof. Snow drifts at different depths; inside,
-you can watch flakes through the window and soft steam curling above your cocoa.
+- **Let it snow.** Sweep the powder, shake snow from pine branches, and watch it tumble from the roof.
+- **Bring the tree to life.** Hold it to light the branches from bottom to star.
+- **Step inside.** Wipe frost from the window, warm your cocoa, and settle beside the fire.
+- **Listen to winter.** Turn on the little speaker for wind, soft snow crunch and crackling wood.
 
-Drag on the foreground snow to leave a drawing; falling snow gradually covers it.
-Inside, rub the glass to wipe away frost, which slowly returns. Hold either tree
-for an upward lighting sequence ending at its star. A small speaker icon enables
-original synthesized wind, soft snow crunch and fireplace ambience. Sound starts
-muted, fades between scenes and pauses when the page is hidden.
+Tap the moon for a shooting-star wish. Come back outside whenever you like.
 
-<p align="center">
-  <img src="docs/screenshots/mobile-snow-drawing.png" width="270" alt="A heart traced into the foreground snow">
-  <img src="docs/screenshots/mobile-frost.png" width="270" alt="Frost wiped from the cabin window with a finger">
-</p>
+<p align="center"><img src="docs/screenshots/mobile-frost.png" width="270" alt="A cozy cabin with frost wiped from its window"></p>
 
-Generated cinematic backgrounds, clipped light plates and one Canvas loop form
-the scenes. Snow has depth and drift; fire uses the original flame texture with
-gentle displacement. This is animated artwork, not a 3D game. No accounts,
-tracking, external fonts or downloaded audio. Sound is generated locally with
-the Web Audio API and also works in the offline bundle.
+Made for a phone held upright. Also playable on desktop, with an offline iOS source bundle.
+No accounts, tracking or visible instructions—just a little winter escape.
 
-## Run locally
+**Enjoyed your visit? [Give the village a star](https://github.com/Dotoryman/christmas_village) so you can find your way back.**
 
-Use Node.js 22.12+ or 24 LTS.
+## Make it yours
 
-```sh
-npm ci
-npm run dev
+```text
+src/       Scenes, artwork and effects
+public/    Sharing image and web headers
+ios/       Offline iOS wrapper
+scripts/   Build helpers
+tests/     Browser checks
+docs/      Guides, screenshots and release notes
 ```
 
-Open `http://127.0.0.1:5173`. `npm run build` produces cacheable web assets in
-`dist`; `npm run preview` serves them locally. The complete portrait fits the
-viewport with a blurred surround on wider screens.
+[Development guide](docs/development.md) · [Artwork](docs/image-prompts.md) · [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md)
 
-## iOS
-
-Run `npm run ios:sync`, then open `ios/ChristmasVillage.xcodeproj` on a Mac with
-Xcode. Choose an iOS 16+ simulator. For a device, set your development Team and
-unique bundle identifier. The SwiftUI shell loads a self-contained WKWebView
-page offline. The iOS build is separate from the web build. Windows browser
-checks do not verify Xcode, WKWebView, device performance or VoiceOver.
-
-## Verify and deploy
-
-```sh
-npx playwright install chromium
-npm test
-npm run build
-npm run ios:sync
-node scripts/check-bundle.mjs
-npm run deploy
-```
-
-Wrangler deploys static assets to Cloudflare Workers with `christmasvillage.cloud`.
-Forks must change the account, Worker name and domain in `wrangler.jsonc`.
-Use `npx wrangler login` for local deployment.
-
-The workflow runs on `v*` tags or manual dispatch. It checks both builds.
-Automatic deployment is configured for this repository. Forks need repository secrets `CLOUDFLARE_API_TOKEN` and
-`CLOUDFLARE_ACCOUNT_ID`; otherwise it reports a notice and skips deployment.
-Credentials are never included in source. Releases are created explicitly with
-reviewed notes and a downloadable iOS source bundle.
-
-Tab, Enter and Space operate the scene; Escape exits the cabin. System reduced
-motion produces a still scene and immediate switches. Animation pauses when
-hidden. Browser tests cover touch, transitions, retained light state, keyboard
-controls, reduced motion and the offline bundle.
-
-Keyboard alternatives: Enter/Space on the snow draws a small heart, and on the
-window wipes a path. Shift+Enter on either tree starts its lighting sequence.
-Reduced motion keeps user drawing and wiping available, with no automatic fading
-or refreezing and an immediate tree-light change. Speaker controls remain explicit.
-
-## Source and artwork
-
-- `src/scene-config.ts`: artwork, hotspot geometry and light masks.
-- `src/animation.ts`: Canvas snow, fire, steam and particles.
-- `src/atmosphere.ts`: branch sway, star shimmer, smoke, steam and window snow.
-- `src/surfaces.ts`: glass frost, wiping and snow drawings in portrait coordinates.
-- `src/sound.ts`: locally synthesized ambience and explicit sound activation.
-- `src/main.ts`: state, asset loading and scene transitions.
-- `ios/`: SwiftUI shell and synchronized offline page.
-- [Image prompts](docs/image-prompts.md), [changelog](CHANGELOG.md), [contributing](CONTRIBUTING.md).
-
-Code and included artwork: [MIT](LICENSE). Backgrounds were created with OpenAI
-ImageGen; prompts and provenance are recorded in the document above. Dependencies
-retain their own licenses.
+Code and included artwork: [MIT](LICENSE). Backgrounds created with OpenAI ImageGen; sound generated locally.
