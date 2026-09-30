@@ -17,6 +17,7 @@ export const targets: Record<Scene, Target[]> = {
     { id: 'tree', name: 'Christmas tree lights', x: 67, y: 39, w: 26, h: 29, light: true, mask: 'polygon(81% 39%,88% 46%,85% 48%,91% 51%,90% 53%,96% 57%,94% 59%,99% 65%,95% 68%,63% 69%,61% 65%,67% 61%,67% 58%,72% 54%,72% 51%,77% 46%)' },
     { id: 'snowman', name: 'Greet the snowman', x: 77, y: 64, w: 19, h: 15 },
     { id: 'branches', name: 'Brush snow off the pine branches', x: 0, y: 12, w: 13, h: 20 },
+    { id: 'snow-draw', name: 'Draw in the snow', x: 17, y: 81, w: 67, h: 17 },
   ],
   inside: [
     { id: 'tree', name: 'Indoor tree lights', x: 1, y: 25, w: 29, h: 38, light: true, mask: 'polygon(12% 24%,17% 29%,17% 34%,22% 40%,23% 45%,28% 53%,32% 63%,0 65%,0 32%,7% 30%)' },
@@ -25,5 +26,6 @@ export const targets: Record<Scene, Target[]> = {
     { id: 'gift', name: 'Open the gift', x: 10, y: 63, w: 25, h: 9 },
     { id: 'mug', name: 'Warm cocoa', x: 51, y: 65.5, w: 9, h: 5 },
     { id: 'exit', name: 'Return to the village', x: 86, y: 36, w: 12, h: 17 },
+    { id: 'frost', name: 'Clear frost from the window', x: 61.5, y: 24.5, w: 21, h: 22.5 },
   ],
 };

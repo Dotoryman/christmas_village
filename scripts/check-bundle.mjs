@@ -12,9 +12,19 @@ try {
   assert.equal(await page.getByRole('button', { name: /fox/i }).count(),0);
   await page.getByRole('button', { name: 'Brush snow off the pine branches' }).click();
   assert.equal(await page.locator('#world').getAttribute('data-last-action'),'branches');
+  await page.getByRole('button',{name:'Draw in the snow',exact:true}).press('Enter');
+  assert.equal(await page.locator('#surfaces').getAttribute('data-marks'),'1');
+  await page.getByRole('button',{name:'Christmas tree lights',exact:true}).press('Shift+Enter');
+  await page.locator('#stage[data-tree-show="done"]').waitFor();
+  await page.getByRole('button',{name:'Enable winter sounds',exact:true}).click();
+  await page.locator('#sound[data-audio-state="running"]').waitFor();
   await page.getByRole('button', { name: 'Enter the cabin' }).click();
   await page.getByRole('button', { name: 'Tend the fire' }).waitFor();
   await page.locator('#landscape').evaluate(image => image.decode());
+  await page.getByRole('button',{name:'Clear frost from the window',exact:true}).press('Enter');
+  assert.equal(await page.locator('#surfaces').getAttribute('data-marks'),'1');
+  await page.getByRole('button',{name:'Mute winter sounds',exact:true}).click();
+  await page.locator('#sound[data-audio-state="suspended"]').waitFor();
   assert.equal(await page.locator('body').innerText(), ''); assert.deepEqual(errors, []);
   console.log('Image-only offline bundle and iOS resource verified.');
 } finally { await browser.close(); }

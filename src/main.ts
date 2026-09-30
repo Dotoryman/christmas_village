@@ -1,9 +1,11 @@
 import { VillageAnimation, type AnimationState, type Scene } from './animation';
 import { images, offImages, targets, type Target } from './scene-config';
+import { SurfacePlay } from './surfaces';
+import { WinterSound } from './sound';
 import './style.css';
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
-app.innerHTML = `<main id="world" aria-label="Christmas Village"><div id="ambient" aria-hidden="true"></div><div id="stage"><img id="landscape" alt="" draggable="false"><div id="plates" aria-hidden="true"></div><canvas id="animation" aria-hidden="true"></canvas><div id="targets"></div></div><div id="fade" aria-hidden="true"></div></main>`;
+app.innerHTML = `<main id="world" aria-label="Christmas Village"><div id="ambient" aria-hidden="true"></div><div id="stage"><img id="landscape" alt="" draggable="false"><div id="plates" aria-hidden="true"></div><canvas id="animation" aria-hidden="true"></canvas><canvas id="surfaces" aria-hidden="true"></canvas><div id="targets"></div><button id="sound" aria-label="Enable winter sounds" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="waves" d="M16 8c2 2 2 6 0 8m3-11c4 4 4 10 0 14"/><path class="slash" d="M16 9l5 6m0-6l-5 6"/></svg></button></div><div id="fade" aria-hidden="true"></div></main>`;
 const world = document.querySelector<HTMLElement>('#world')!;
 const stage = document.querySelector<HTMLDivElement>('#stage')!;
 const landscape = document.querySelector<HTMLImageElement>('#landscape')!;
@@ -22,7 +24,24 @@ const animationState: AnimationState = {
   scene, lit: id => lightStates.get(stateKey(id)) ?? true,
   cocoaUntil: 0, reduced: media.matches,
 };
-const engine = new VillageAnimation(canvas, animationState);
+const surfaces = new SurfacePlay(document.querySelector<HTMLCanvasElement>('#surfaces')!);
+const sound = new WinterSound(document.querySelector<HTMLButtonElement>('#sound')!);
+function finishTreePlate(plate:HTMLImageElement|null){
+  if(!plate)return;
+  plate.style.opacity='0';plate.classList.remove('off');plate.style.maskImage='';
+  void plate.offsetWidth;plate.classList.remove('sequencing');plate.style.opacity='';
+}
+const engine = new VillageAnimation(canvas, animationState,(dt,progress)=>{
+  surfaces.draw(dt);
+  if(stage.dataset.treeShow==='running') {
+    const plate=plates.querySelector<HTMLImageElement>('[data-plate="tree"]');
+    const top=scene==='outside'?.39:.24,bottom=scene==='outside'?.70:.65;
+    const edge=(bottom-(bottom-top)*progress)*100;
+    if(plate)plate.style.maskImage=`linear-gradient(to bottom,black ${edge}%,transparent ${edge+1.5}%)`;
+    if(progress===1){stage.dataset.treeShow='done';finishTreePlate(plate);}
+  }
+});
+let cancelHold:()=>void=()=>{};
 const imageCache = new Map<string, HTMLImageElement>();
 async function preload(src: string) {
   let image = imageCache.get(src);
@@ -39,6 +58,7 @@ function addPlate(id: string, mask: string, off: boolean) {
   image.classList.toggle('off', off); plates.append(image);
 }
 function render() {
+  cancelHold();delete stage.dataset.treeShow;
   world.dataset.scene = scene; animationState.scene = scene;
   stage.className = '';
   landscape.src = images[scene]; ambient.style.backgroundImage = `url("${images[scene]}")`;
@@ -54,12 +74,39 @@ function render() {
       if (target.mask) addPlate(target.id, target.mask, !on);
       button.setAttribute('aria-pressed', String(on));
     }
-    button.onclick = () => interact(target, button); targetLayer.append(button);
+    if(target.id==='frost'||target.id==='snow-draw') {
+      button.classList.add('paint-surface');
+      surfaces.bind(button,()=>{trackAction(target.id);sound.snowTouch();});
+    } else if(target.id==='tree') bindTree(button,target);
+    else button.onclick = () => interact(target, button);
+    targetLayer.append(button);
   }
   if (scene === 'inside') {
     const gifts = document.createElement('img'); gifts.src = images.inside; gifts.alt = ''; gifts.className = 'gift-ribbon'; gifts.draggable = false; plates.append(gifts);
   }
-  engine.reset();
+  surfaces.setScene(scene);sound.setScene(scene);engine.reset();
+}
+function startTreeShow(button:HTMLButtonElement) {
+  if(busy)return;
+  lightStates.set(stateKey('tree'),true);button.setAttribute('aria-pressed','true');trackAction('tree-show');
+  const plate=plates.querySelector<HTMLImageElement>('[data-plate="tree"]');
+  if(animationState.reduced){stage.dataset.treeShow='done';finishTreePlate(plate);}
+  else{stage.dataset.treeShow='running';plate?.classList.add('off','sequencing');if(plate)plate.style.maskImage='linear-gradient(black,black)';}
+  engine.lightTree();
+}
+function bindTree(button:HTMLButtonElement,target:Target){
+  let timer:ReturnType<typeof setTimeout>|undefined,held=false,pointer:number|undefined,startX=0,startY=0;
+  const clear=()=>{if(timer)clearTimeout(timer);timer=undefined;};
+  cancelHold=()=>{clear();held=false;pointer=undefined;};
+  button.setAttribute('aria-description','Tap to toggle lights. Hold to light the tree from bottom to top. Keyboard: Shift+Enter.');
+  button.onpointerdown=event=>{if(!event.isPrimary||event.pointerType==='mouse'&&event.button!==0)return;held=false;pointer=event.pointerId;startX=event.clientX;startY=event.clientY;button.setPointerCapture(pointer);timer=setTimeout(()=>{timer=undefined;held=true;startTreeShow(button);},650);};
+  button.onpointermove=event=>{if(event.pointerId===pointer&&Math.hypot(event.clientX-startX,event.clientY-startY)>14)clear();};
+  button.onpointerup=()=>{clear();pointer=undefined;};
+  button.onpointercancel=()=>{clear();pointer=undefined;held=false;};
+  button.onlostpointercapture=clear;
+  button.oncontextmenu=event=>event.preventDefault();
+  button.onkeydown=event=>{if(event.shiftKey&&event.key==='Enter'){event.preventDefault();startTreeShow(button);}};
+  button.onclick=event=>{if(held&&event.detail!==0){held=false;return;}held=false;engine.cancelTree();delete stage.dataset.treeShow;const plate=plates.querySelector<HTMLImageElement>('[data-plate="tree"]');plate?.classList.remove('sequencing');if(plate)plate.style.maskImage='';interact(target,button);};
 }
 function trackAction(id: string) {
   world.dataset.lastAction = id; world.dataset.actionSerial = String(++actionSerial);
@@ -67,6 +114,7 @@ function trackAction(id: string) {
 async function travel(next: Scene) {
   if (busy) return;
   busy = true; targetLayer.inert = true;
+  cancelHold();
   stage.style.setProperty('--door-x', scene === 'outside' ? '48%' : '92%');
   stage.style.setProperty('--door-y', scene === 'outside' ? '55%' : '45%');
   world.classList.add('travelling');
@@ -102,6 +150,7 @@ function applyMotion() {
   animationState.reduced = media.matches;
   document.documentElement.classList.toggle('reduced-motion', media.matches);
   canvas.dataset.motion = media.matches ? 'still' : 'running'; engine.start();
+  if(media.matches&&stage.dataset.treeShow==='running'){engine.cancelTree();stage.dataset.treeShow='done';finishTreePlate(plates.querySelector<HTMLImageElement>('[data-plate="tree"]'));}
 }
 media.addEventListener('change', applyMotion);
 document.addEventListener('keydown', event => {
@@ -109,8 +158,9 @@ document.addEventListener('keydown', event => {
   if (event.key === 'Escape' && scene === 'inside') void travel('outside');
 });
 document.addEventListener('pointerdown', () => { keyboardMode = false; });
+document.addEventListener('visibilitychange',()=>{if(document.hidden)cancelHold();});
 world.addEventListener('pointermove', event => {
-  if (event.pointerType !== 'mouse' || media.matches || busy) return;
+  if (event.pointerType !== 'mouse' || media.matches || busy || (event.target as HTMLElement).closest('.paint-surface')) return;
   const box = world.getBoundingClientRect();
   stage.style.setProperty('--look-x', `${(event.clientX / box.width - .5) * 2}px`);
   stage.style.setProperty('--look-y', `${(event.clientY / box.height - .5) * 1.2}px`);

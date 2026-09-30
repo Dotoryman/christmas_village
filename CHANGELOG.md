@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.4.0 — 2026-09-30
+
+- Wipe frost from the cabin's glass panes; it gradually returns without covering
+  the wooden window frame. Draw in the foreground snow and watch marks fade.
+- Hold either Christmas tree for bottom-to-top illumination, finishing at the
+  star. A short tap retains the normal light switch.
+- Explicit speaker control for locally synthesized winter wind, snow crunch and
+  fireplace ambience, with scene crossfades and background suspension.
+- Touch, mouse and keyboard alternatives; reduced motion freezes automatic
+  surface recovery and makes the lighting sequence immediate.
+- Web and offline iOS bundles updated; expanded browser and offline checks.
+
 ## 0.3.1 — 2026-09-30
 
 - Removed the fox visitor, its hotspot and the sprite from active source assets.

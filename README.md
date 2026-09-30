@@ -22,10 +22,22 @@ make a shooting-star wish. The outer branches sway gently, a few stars shimmer,
 and small clumps tumble from the roof. Snow drifts at different depths; inside,
 you can watch flakes through the window and soft steam curling above your cocoa.
 
+Drag on the foreground snow to leave a drawing; falling snow gradually covers it.
+Inside, rub the glass to wipe away frost, which slowly returns. Hold either tree
+for an upward lighting sequence ending at its star. A small speaker icon enables
+original synthesized wind, soft snow crunch and fireplace ambience. Sound starts
+muted, fades between scenes and pauses when the page is hidden.
+
+<p align="center">
+  <img src="docs/screenshots/mobile-snow-drawing.png" width="270" alt="A heart traced into the foreground snow">
+  <img src="docs/screenshots/mobile-frost.png" width="270" alt="Frost wiped from the cabin window with a finger">
+</p>
+
 Generated cinematic backgrounds, clipped light plates and one Canvas loop form
 the scenes. Snow has depth and drift; fire uses the original flame texture with
 gentle displacement. This is animated artwork, not a 3D game. No accounts,
-tracking, external fonts or audio.
+tracking, external fonts or downloaded audio. Sound is generated locally with
+the Web Audio API and also works in the offline bundle.
 
 ## Run locally
 
@@ -74,11 +86,18 @@ motion produces a still scene and immediate switches. Animation pauses when
 hidden. Browser tests cover touch, transitions, retained light state, keyboard
 controls, reduced motion and the offline bundle.
 
+Keyboard alternatives: Enter/Space on the snow draws a small heart, and on the
+window wipes a path. Shift+Enter on either tree starts its lighting sequence.
+Reduced motion keeps user drawing and wiping available, with no automatic fading
+or refreezing and an immediate tree-light change. Speaker controls remain explicit.
+
 ## Source and artwork
 
 - `src/scene-config.ts`: artwork, hotspot geometry and light masks.
 - `src/animation.ts`: Canvas snow, fire, steam and particles.
 - `src/atmosphere.ts`: branch sway, star shimmer, smoke, steam and window snow.
+- `src/surfaces.ts`: glass frost, wiping and snow drawings in portrait coordinates.
+- `src/sound.ts`: locally synthesized ambience and explicit sound activation.
 - `src/main.ts`: state, asset loading and scene transitions.
 - `ios/`: SwiftUI shell and synchronized offline page.
 - [Image prompts](docs/image-prompts.md), [changelog](CHANGELOG.md), [contributing](CONTRIBUTING.md).

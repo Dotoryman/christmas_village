@@ -25,11 +25,12 @@ export class VillageAnimation {
   private outsideImage = new Image();
   private starAge = -11;
   private windUntil = 0;
+  private treeAge = -1;
   private glowSprites = new Map<string, HTMLCanvasElement>();
   private snow: Flake[] = Array.from({ length: 135 }, () => ({ x: Math.random(), y: Math.random(), depth: random(.15, 1), phase: random(0, Math.PI * 2) }));
   private observer: ResizeObserver;
   private visibility = () => { this.stop(); if (!document.hidden) this.start(); };
-  constructor(private canvas: HTMLCanvasElement, private state: AnimationState) {
+  constructor(private canvas: HTMLCanvasElement, private state: AnimationState, private afterDraw: (dt:number,treeProgress:number)=>void = ()=>{}) {
     this.ctx = canvas.getContext('2d', { alpha: true })!;
     this.fireImage.src = fireArt;
     this.outsideImage.src = outsideArt;
@@ -54,7 +55,9 @@ export class VillageAnimation {
     this.frame = requestAnimationFrame(this.tick);
   }
   stop() { cancelAnimationFrame(this.frame); this.frame = 0; }
-  reset() { this.particles = []; this.start(); }
+  reset() { this.particles = []; this.treeAge=-1; this.start(); }
+  lightTree() { this.treeAge=this.state.reduced?-1:0;this.start(); }
+  cancelTree() { this.treeAge=-1; }
   makeWish() { if (!this.state.reduced) this.starAge = 0; }
   destroy() { this.stop(); this.observer.disconnect(); document.removeEventListener('visibilitychange', this.visibility); }
   private tick = (now: number) => {
@@ -102,8 +105,11 @@ export class VillageAnimation {
     const ctx = this.ctx;
     ctx.clearRect(0, 0, this.width, this.height);
     if (this.width < 1 || this.height < 1) return;
+    if(this.treeAge>=0)this.treeAge+=dt;
     if (this.state.scene === 'outside') this.drawOutside(dt); else this.drawInside(dt);
     if (!this.state.reduced) this.drawParticles(dt);
+    this.afterDraw(this.state.reduced?0:dt,this.treeAge<0?1:Math.min(1,this.treeAge/2.8));
+    if(this.treeAge>3.9)this.treeAge=-1;
   }
   private drawOutside(dt: number) {
     const ctx = this.ctx, t = this.time;
@@ -166,10 +172,12 @@ export class VillageAnimation {
         const u = i / (n - 1), depth = (row + 1) / 6;
         const x = cx + (u - .5) * spread * depth * 1.7;
         const y = top + height * depth + Math.sin(u * Math.PI) * .006;
+        if(this.treeAge>=0 && this.treeAge/2.8<1-depth)continue;
         const shimmer = .5 + .5 * Math.sin(this.time * .75 + row * 1.4 + i * .67);
         this.glow(x, y, .01, .035 + shimmer * .09);
       }
     }
+    if(this.treeAge>=2.8){const pulse=Math.sin(Math.min(1,(this.treeAge-2.8)/1.1)*Math.PI);this.glow(cx,top,.055,pulse*.22);}
   }
   private drawInside(dt: number) {
     const ctx = this.ctx, t = this.time;
