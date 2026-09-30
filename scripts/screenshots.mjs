@@ -8,8 +8,8 @@ try {
     await page.locator('#landscape').evaluate(image => image.decode());
     await page.locator('#world.ready').waitFor(); await page.waitForTimeout(600);
     await page.screenshot({ path: `docs/screenshots/${name}-outside.png`, scale: 'css' });
-    await page.getByRole('button', { name: '오두막 안으로 들어가기' }).click();
-    await page.getByRole('button', { name: '벽난로 불 더하기' }).waitFor(); await page.waitForTimeout(500);
+    await page.getByRole('button', { name: 'Enter the cabin' }).click();
+    await page.getByRole('button', { name: 'Tend the fire' }).waitFor(); await page.waitForTimeout(500);
     await page.screenshot({ path: `docs/screenshots/${name}-inside.png`, scale: 'css' }); await page.close();
   }
 } finally { await browser.close(); }

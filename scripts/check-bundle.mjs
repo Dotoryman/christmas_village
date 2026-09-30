@@ -7,9 +7,10 @@ try {
   const page = await browser.newPage({ offline: true });
   const errors = []; page.on('pageerror', error => errors.push(error.message));
   await page.goto(new URL('../dist-ios/index.html', import.meta.url).href);
+  assert.ok(await page.locator('link[rel="icon"]').evaluate(icon => icon.href.startsWith('data:')), 'Offline favicon must be embedded');
   await page.locator('#landscape').evaluate(image => image.decode());
-  await page.getByRole('button', { name: '오두막 안으로 들어가기' }).click();
-  await page.getByRole('button', { name: '벽난로 불 더하기' }).waitFor();
+  await page.getByRole('button', { name: 'Enter the cabin' }).click();
+  await page.getByRole('button', { name: 'Tend the fire' }).waitFor();
   await page.locator('#landscape').evaluate(image => image.decode());
   assert.equal(await page.locator('body').innerText(), ''); assert.deepEqual(errors, []);
   console.log('Image-only offline bundle and iOS resource verified.');

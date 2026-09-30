@@ -3,7 +3,7 @@ import { images, offImages, targets, type Target } from './scene-config';
 import './style.css';
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
-app.innerHTML = `<main id="world" aria-label="크리스마스 마을"><div id="ambient" aria-hidden="true"></div><div id="stage"><img id="landscape" alt="" draggable="false"><div id="plates" aria-hidden="true"></div><canvas id="animation" aria-hidden="true"></canvas><div id="targets"></div></div><div id="fade" aria-hidden="true"></div></main>`;
+app.innerHTML = `<main id="world" aria-label="Christmas Village"><div id="ambient" aria-hidden="true"></div><div id="stage"><img id="landscape" alt="" draggable="false"><div id="plates" aria-hidden="true"></div><canvas id="animation" aria-hidden="true"></canvas><div id="targets"></div></div><div id="fade" aria-hidden="true"></div></main>`;
 const world = document.querySelector<HTMLElement>('#world')!;
 const stage = document.querySelector<HTMLDivElement>('#stage')!;
 const landscape = document.querySelector<HTMLImageElement>('#landscape')!;
@@ -42,7 +42,7 @@ function render() {
   world.dataset.scene = scene; animationState.scene = scene;
   stage.className = '';
   landscape.src = images[scene]; ambient.style.backgroundImage = `url("${images[scene]}")`;
-  world.setAttribute('aria-label', scene === 'outside' ? '눈 내리는 숲 속 오두막' : '따뜻한 오두막 실내');
+  world.setAttribute('aria-label', scene === 'outside' ? 'Snowy forest cabin' : 'Warm cabin interior');
   targetLayer.replaceChildren(); plates.replaceChildren();
   if (scene === 'inside') addPlate('firebox', 'polygon(31.2% 49%,34% 47.2%,52% 47.2%,55% 49%,55% 59.6%,31.2% 59.6%)', true);
   for (const target of targets[scene]) {

@@ -33,3 +33,10 @@ Edit target: attached portrait Christmas cabin. Make a perfectly registered alte
 ### Interior
 
 Edit target: supplied portrait cozy cabin interior. Create a precisely registered alternate light state for an animated scene. Keep EXACT camera angle, portrait dimensions, geometry, objects, rug, chair, table, gifts, window view, door, garlands, every texture and position unchanged. Change ONLY: remove visible flames and flying sparks from inside the fireplace, leaving glowing logs and red embers, dim brick firebox but leave the opening shape exact; switch off Christmas tree fairy lights/star; extinguish ONLY the white mantel candles, keeping the other lanterns and chandelier lights lit. Maintain warm room ambient lighting from those other lights. Do not darken the entire scene. No new elements, no text. Alignment to original frame must be exact; output same portrait aspect ratio.
+
+## 2026-09-30 — social sharing cover
+
+Built-in OpenAI ImageGen; exterior portrait used as a visual reference.
+Project output: public/social-v2.jpg, encoded at 1200×630 as JPEG.
+
+Create a new premium social sharing cover for the website Christmas Village. The supplied portrait image is a visual reference for the cabin, winter scenery and cinematic animated-film realism, not a layout to crop. Recompose as a wide horizontal social card with EXACT aspect ratio 1.91:1, ideally 1200x630. Rich midnight blue snowy forest, a lovingly detailed timber cabin glowing amber on the right half, a Christmas tree with warm golden lights beside it, moonlit snow and soft falling flakes. On the left half leave calm dark blue sky/forest negative space and set the exact title 'Christmas Village' in large elegant warm ivory serif typography, two lines if needed, fully legible even in a thumbnail. No subtitle, no other text, no Korean, no logos, no watermark. Restrained cinematic composition, enchanting and cozy, realistic textured snow and wood, professional polished sharing artwork. Keep all title letters and main subjects well inside a generous safe margin.

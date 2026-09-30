@@ -4,7 +4,7 @@ A quiet winter hideaway you can touch. Snow falls outside a cabin; open the door
 and settle beside the fire. Built for a phone held upright, with no visible text
 or menus.
 
-**[Enter the village](https://christmasvillage.cloud)** · [한국어](#한국어)
+**[Enter the village](https://christmasvillage.cloud)**
 
 <p align="center">
   <img src="docs/screenshots/mobile-outside.png" width="270" alt="Snowy cabin beneath a winter moon">
@@ -59,7 +59,7 @@ Forks must change the account, Worker name and domain in `wrangler.jsonc`.
 Use `npx wrangler login` for local deployment.
 
 The workflow runs on `v*` tags or manual dispatch. It checks both builds.
-Deployment needs repository secrets `CLOUDFLARE_API_TOKEN` and
+Automatic deployment is configured for this repository. Forks need repository secrets `CLOUDFLARE_API_TOKEN` and
 `CLOUDFLARE_ACCOUNT_ID`; otherwise it reports a notice and skips deployment.
 Credentials are never included in source. Releases are created explicitly with
 reviewed notes and a downloadable iOS source bundle.
@@ -80,18 +80,3 @@ controls, reduced motion and the offline bundle.
 Code and included artwork: [MIT](LICENSE). Backgrounds were created with OpenAI
 ImageGen; prompts and provenance are recorded in the document above. Dependencies
 retain their own licenses.
-
-## 한국어
-
-휴대폰을 세로로 들고 즐기는 작은 크리스마스 마을입니다. 화면에는 그림과
-움직임만 보입니다. 창문·트리·가로등을 누르면 조명이 바뀌고, 지붕의 눈을
-털거나 눈사람에게 인사할 수 있습니다. 오두막 문을 열면 따뜻한 실내가
-나옵니다. 벽난로·촛불·선물·코코아를 눌러보세요.
-
-`npm ci`와 `npm run dev`로 로컬에서 실행합니다. 웹 빌드는 `npm run build`,
-iOS 번들 동기화는 `npm run ios:sync`입니다. Mac에서 Xcode 프로젝트를 열어
-실행하세요. Windows에서는 iOS 네이티브 빌드와 실기기 검증을 수행하지
-않았습니다. 웹과 오프라인 번들은 Chromium으로 검증합니다.
-
-눈·빛·불꽃·김을 정지 이미지 위에서 움직이는 구조입니다. 기능을 많이
-추가하기보다 두 장면의 분위기와 작은 반응을 다듬는 프로젝트입니다.
