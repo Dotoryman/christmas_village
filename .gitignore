@@ -1,0 +1,15 @@
+node_modules/
+dist/
+dist-ios/
+test-results/
+playwright-report/
+.DS_Store
+*.xcuserstate
+xcuserdata/
+DerivedData/
+.local/
+.wrangler/
+.dev.vars*
+.env*
+!.env.example
+release/

@@ -1,0 +1,24 @@
+{
+  "name": "christmas-village",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "ios:sync": "npm run build:ios && node scripts/sync-ios.mjs",
+    "test": "playwright test",
+    "build:ios": "tsc --noEmit && vite build --mode ios",
+    "deploy": "npm run build && wrangler deploy",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "sharp": "^0.35.5",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.1",
+    "vite-plugin-singlefile": "^2.3.3",
+    "wrangler": "^4.144.0"
+  }
+}

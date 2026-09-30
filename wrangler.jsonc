@@ -1,0 +1,9 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "christmas-village",
+  "account_id": "f7934e72f79c6fa3f46fe184abcdc75b",
+  "compatibility_date": "2026-09-30",
+  "assets": { "directory": "./dist" },
+  "workers_dev": true,
+  "routes": [{ "pattern": "christmasvillage.cloud", "custom_domain": true }]
+}

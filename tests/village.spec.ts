@@ -1,0 +1,45 @@
+import { test, expect } from '@playwright/test';
+test('mobile-first image-only scene and touch interactions', async ({ page }, testInfo) => {
+  const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
+  await page.goto('/');
+  await expect(page.locator('body')).toHaveText('');
+  await expect(page.locator('header, footer, h1, p')).toHaveCount(0);
+  await page.locator('#landscape').evaluate((image: HTMLImageElement) => image.decode());
+  const firstFrame = await page.locator('#animation').evaluate((canvas: HTMLCanvasElement) => canvas.toDataURL());
+  await expect.poll(() => page.locator('#animation').evaluate((canvas: HTMLCanvasElement) => canvas.toDataURL())).not.toBe(firstFrame);
+  const activate = async (name: string) => {
+    const button = page.getByRole('button', { name, exact: true });
+    if (testInfo.project.name === 'mobile') await button.tap(); else await button.click();
+  };
+  await activate('왼쪽 창문 조명');
+  await expect(page.getByRole('button', { name: '왼쪽 창문 조명' })).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.locator('[data-plate="left-window"]')).toHaveCSS('opacity', '1');
+  await activate('지붕의 눈 털기');
+  await expect.poll(() => page.locator('#animation').getAttribute('data-particles')).not.toBe('0');
+  await activate('크리스마스 트리 조명');
+  await expect(page.getByRole('button', { name: '크리스마스 트리 조명' })).toHaveAttribute('aria-pressed', 'false');
+  await activate('눈사람에게 인사하기');
+  await activate('오두막 안으로 들어가기');
+  await expect(page.locator('#world')).toHaveAttribute('data-scene', 'inside');
+  await activate('벽난로 불 더하기');
+  await expect(page.getByRole('button', { name: '벽난로 불 더하기' })).toHaveAttribute('aria-pressed', 'true');
+  await activate('선물 열기'); await expect(page.locator('#stage')).toHaveClass('gift-open');
+  await activate('따뜻한 코코아'); await expect(page.locator('#world')).toHaveAttribute('data-last-action', 'mug');
+  await activate('마을로 돌아가기');
+  await expect(page.locator('#world')).toHaveAttribute('data-scene', 'outside');
+  await expect(page.getByRole('button', { name: '왼쪽 창문 조명' })).toHaveAttribute('aria-pressed', 'false');
+  expect(errors).toEqual([]);
+});
+test('keyboard and reduced motion, entire portrait fits screen', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' }); await page.goto('/');
+  await expect(page.locator('#animation')).toHaveAttribute('data-motion', 'still');
+  const frame = await page.locator('#animation').evaluate((canvas: HTMLCanvasElement) => canvas.toDataURL());
+  await page.waitForTimeout(150);
+  expect(await page.locator('#animation').evaluate((canvas: HTMLCanvasElement) => canvas.toDataURL())).toBe(frame);
+  const bounds = await page.locator('#stage').boundingBox();
+  const view = page.viewportSize()!;
+  expect(bounds!.width).toBeLessThanOrEqual(view.width + 1); expect(bounds!.height).toBeLessThanOrEqual(view.height + 1);
+  await page.getByRole('button', { name: '오두막 안으로 들어가기' }).press('Enter');
+  await expect(page.locator('#world')).toHaveAttribute('data-scene', 'inside');
+  await page.keyboard.press('Escape'); await expect(page.locator('#world')).toHaveAttribute('data-scene', 'outside');
+});
