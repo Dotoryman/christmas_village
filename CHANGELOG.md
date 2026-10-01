@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.0 — 2026-10-01
+
+- Added table-window frost wiping with separate room masks and wipe history.
+- Added a garland-light chase, warm window-lantern pulse, roast steam and cranberry glints.
+- Reactions fade on the shared animation clock, reset on travel and support reduced motion.
+
 ## 0.7.0 — 2026-10-01
 
 - Added crystal-glass rim glints, a gentle synthesized chime, golden table-gift

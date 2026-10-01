@@ -4,6 +4,7 @@ export interface AnimationState {
   lit: (id: string) => boolean;
   cocoaUntil: number;
   candleUntil: number;
+  partyReactions: Partial<Record<'garland' | 'lantern' | 'roast' | 'berries', number>>;
   reduced: boolean;
 }
 export type Particle = {

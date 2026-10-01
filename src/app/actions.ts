@@ -34,6 +34,19 @@ export function createActions({ engine, state, sound, travel, openGift }: Servic
     mug: cocoa,
     'party-cocoa': cocoa,
     'party-cocoa-right': cocoa,
+    // Finite pulses fade on the shared clock and are cleared on room changes.
+    'party-garland': () => {
+      state.partyReactions.garland = performance.now();
+    },
+    'party-lantern': () => {
+      state.partyReactions.lantern = performance.now();
+    },
+    'party-roast': () => {
+      state.partyReactions.roast = performance.now();
+    },
+    'party-berries': () => {
+      state.partyReactions.berries = performance.now();
+    },
     'party-candles': () => {
       state.candleUntil = performance.now() + 3500;
     },

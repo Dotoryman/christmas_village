@@ -52,6 +52,20 @@ try {
   assert.equal(await page.locator('#sound').getAttribute('data-last-sound'), 'chime');
   await page.getByRole('button', { name: 'Discover the table gift', exact: true }).click();
   assert.equal(await page.locator('#world').getAttribute('data-last-action'), 'party-gift');
+  await page
+    .getByRole('button', { name: 'Clear frost from the table window', exact: true })
+    .press('Enter');
+  assert.equal(await page.locator('#surfaces').getAttribute('data-marks'), '1');
+  for (const [name, kind] of [
+    ['Wake the garland lights', 'garland'],
+    ['Warm the window lantern', 'lantern'],
+    ['Savor the Christmas roast', 'roast'],
+    ['Polish the cranberry sparkle', 'berries'],
+  ]) {
+    await page.getByRole('button', { name, exact: true }).click();
+    assert.equal(await page.locator('#world').getAttribute('data-last-action'), `party-${kind}`);
+    await page.locator(`#animation[data-${kind}="active"]`).waitFor();
+  }
   await page.getByRole('button', { name: 'Warm the table candlelight', exact: true }).click();
   await page.getByRole('button', { name: 'Return to the living room', exact: true }).click();
   await page.getByRole('button', { name: 'Tend the fire' }).waitFor();

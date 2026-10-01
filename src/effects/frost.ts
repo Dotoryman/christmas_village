@@ -1,7 +1,7 @@
 import type { Scene } from '../scenes/types';
 type Point = { x: number; y: number };
 type Stroke = { points: Point[]; age: number };
-const panes = [
+const insidePanes = [
   [
     [0.625, 0.247],
     [0.705, 0.254],
@@ -40,13 +40,55 @@ const panes = [
   ],
 ];
 
+// Photograph-aligned masks keep frost off mullions and the foreground lantern.
+const windows = {
+  inside: { panes: insidePanes, bounds: [0.615, 0.245, 0.21, 0.225] },
+  party: {
+    bounds: [0.739, 0.079, 0.219, 0.184],
+    panes: [
+      [
+        [0.746, 0.094],
+        [0.834, 0.089],
+        [0.834, 0.166],
+        [0.742, 0.168],
+      ],
+      [
+        [0.847, 0.088],
+        [0.954, 0.079],
+        [0.954, 0.162],
+        [0.847, 0.165],
+      ],
+      [
+        [0.743, 0.176],
+        [0.834, 0.173],
+        [0.834, 0.26],
+        [0.807, 0.259],
+        [0.807, 0.223],
+        [0.743, 0.208],
+      ],
+      [
+        [0.847, 0.173],
+        [0.954, 0.168],
+        [0.954, 0.26],
+        [0.847, 0.26],
+      ],
+    ],
+  },
+};
+
 /** Wipe marks use portrait coordinates and the shared scene clock. Only the
- * six glass panes are frosted; the wooden frame stays part of the photograph. */
+ * glass panes are frosted; the wooden frame stays part of the photograph. */
 export class FrostWindow {
   private ctx: CanvasRenderingContext2D;
   private frost = document.createElement('canvas');
   private working = document.createElement('canvas');
-  private marks: Stroke[] = [];
+  private roomMarks: Record<'inside' | 'party', Stroke[]> = { inside: [], party: [] };
+  private get marks() {
+    return this.scene === 'party' ? this.roomMarks.party : this.roomMarks.inside;
+  }
+  private set marks(value: Stroke[]) {
+    this.roomMarks[this.scene === 'party' ? 'party' : 'inside'] = value;
+  }
   private scene: Scene = 'outside';
   private active?: Stroke;
   private width = 1;
@@ -141,7 +183,15 @@ export class FrostWindow {
       // Enter/Space provide an equivalent mark without requiring a drag gesture.
       if (event.detail !== 0) return;
       const points: Point[] = [];
-      points.push({ x: 0.667, y: 0.286 }, { x: 0.762, y: 0.351 }, { x: 0.669, y: 0.423 });
+      const [left, top, width, height] =
+        windows[this.scene === 'party' ? 'party' : 'inside'].bounds;
+      points.push(
+        ...[
+          [0.25, 0.18],
+          [0.7, 0.5],
+          [0.25, 0.8],
+        ].map(([x, y]) => ({ x: left + x * width, y: top + y * height })),
+      );
       this.marks.push({ points, age: 0 });
       this.marks = this.marks.slice(-48);
       onTouch();
@@ -163,11 +213,15 @@ export class FrostWindow {
       w = this.width,
       h = this.height;
     ctx.clearRect(0, 0, w, h);
-    this.canvas.dataset.marks = String(this.scene === 'inside' ? this.marks.length : 0);
-    if (this.scene !== 'inside') return;
+    this.canvas.dataset.marks = String(this.scene !== 'outside' ? this.marks.length : 0);
+    if (this.scene === 'outside') return;
+    const {
+      panes,
+      bounds: [left, top, width, height],
+    } = windows[this.scene];
     for (const mark of this.marks) if (mark !== this.active) mark.age += dt;
     this.marks = this.marks.filter((mark) => mark.age < 40);
-    if (this.scene === 'inside') {
+    {
       const work = this.working.getContext('2d')!;
       work.clearRect(0, 0, 256, 448);
       work.drawImage(this.frost, 0, 0);
@@ -178,13 +232,13 @@ export class FrostWindow {
         work.lineWidth = 38;
         work.beginPath();
         mark.points.forEach((p, i) => {
-          const x = ((p.x - 0.615) / 0.21) * 256,
-            y = ((p.y - 0.245) / 0.225) * 448;
+          const x = ((p.x - left) / width) * 256,
+            y = ((p.y - top) / height) * 448;
           i ? work.lineTo(x, y) : work.moveTo(x, y);
         });
         if (mark.points.length === 1) {
           const p = mark.points[0];
-          work.lineTo(((p.x - 0.615) / 0.21) * 256 + 0.01, ((p.y - 0.245) / 0.225) * 448);
+          work.lineTo(((p.x - left) / width) * 256 + 0.01, ((p.y - top) / height) * 448);
         }
         work.stroke();
       }
@@ -197,7 +251,7 @@ export class FrostWindow {
         ctx.closePath();
       }
       ctx.clip();
-      ctx.drawImage(this.working, 0.615 * w, 0.245 * h, 0.21 * w, 0.225 * h);
+      ctx.drawImage(this.working, left * w, top * h, width * w, height * h);
       ctx.restore();
     }
   }

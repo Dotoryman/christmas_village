@@ -11,6 +11,11 @@ export const party: SceneDefinition = {
   focus: 'living-room',
   escape: 'inside',
   targets: [
+    { id: 'frost', name: 'Clear frost from the table window', x: 74, y: 8, w: 22, h: 15 },
+    { id: 'party-garland', name: 'Wake the garland lights', x: 61, y: 3, w: 10, h: 26 },
+    { id: 'party-lantern', name: 'Warm the window lantern', x: 72, y: 23, w: 10, h: 7 },
+    { id: 'party-roast', name: 'Savor the Christmas roast', x: 29, y: 53, w: 46, h: 10 },
+    { id: 'party-berries', name: 'Polish the cranberry sparkle', x: 22, y: 66, w: 17, h: 6 },
     { id: 'living-room', name: 'Return to the living room', x: 2, y: 10, w: 37, h: 27 },
     { id: 'party-candles', name: 'Warm the table candlelight', x: 36, y: 28, w: 28, h: 19 },
     { id: 'party-cocoa', name: 'Warm the left festive cocoa', x: 4, y: 55, w: 20, h: 11 },

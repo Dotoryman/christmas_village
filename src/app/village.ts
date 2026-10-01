@@ -31,6 +31,7 @@ const animationState: AnimationState = {
   scene,
   lit: (id) => lightStates.get(stateKey(id)) ?? true,
   cocoaUntil: 0,
+  partyReactions: {},
   candleUntil: 0,
   reduced: media.matches,
 };
@@ -196,6 +197,7 @@ async function travel(next: Scene) {
     ]);
     scene = next;
     animationState.cocoaUntil = animationState.candleUntil = 0;
+    animationState.partyReactions = {};
     render();
     world.classList.remove('travelling');
     targetLayer.inert = false;

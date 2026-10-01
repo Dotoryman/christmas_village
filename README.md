@@ -20,6 +20,7 @@ A small world of warm lights and snowy surprises. Take your time.
 - **Step inside.** Wipe frost from the window, warm your cocoa, and settle beside the fire.
 - **Join the feast.** Touch the little table to discover a Christmas spread, candlelight and steaming cocoa. The archway brings you back to the living room.
 - **Add a little sparkle.** Touch the gingerbread icing or dust the Christmas cake with sugar.
+- **Linger by the table.** Wipe the frosty window, wake the garland and lantern, and watch steam rise from the roast or light catch the cranberries.
 - **Make a toast.** Touch the crystal glass for a glint and a gentle chime, or discover the little table gift.
 - **Listen to winter.** Turn on the little speaker for wind, soft snow crunch and crackling wood.
 
