@@ -1,5 +1,40 @@
 import { test, expect } from '@playwright/test';
 
+test('dense snowfall and food reactions fade cleanly and respect reduced motion', async ({
+  page,
+}, testInfo) => {
+  await page.goto('/');
+  await page.locator('#world.ready').waitFor();
+  await expect(page.locator('#animation')).toHaveAttribute('data-snow-count', '680');
+  const activate = async (name: string) => {
+    const target = page.getByRole('button', { name, exact: true });
+    if (testInfo.project.name === 'mobile') await target.tap();
+    else await target.click();
+  };
+  await activate('Enter the cabin');
+  await activate('Visit the Christmas table');
+  await activate('Sparkle the gingerbread icing');
+  await expect(page.locator('#world')).toHaveAttribute('data-last-action', 'cookie-stars');
+  await expect
+    .poll(async () => Number(await page.locator('#animation').getAttribute('data-particles')))
+    .toBeGreaterThan(0);
+  await activate('Dust the Christmas cake with sugar');
+  await expect(page.locator('#world')).toHaveAttribute('data-last-action', 'cake-sugar');
+  await expect
+    .poll(async () => Number(await page.locator('#animation').getAttribute('data-particles')))
+    .toBe(0);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(page.locator('#animation')).toHaveAttribute('data-motion', 'still');
+  const frame = await page
+    .locator('#animation')
+    .evaluate((canvas: HTMLCanvasElement) => canvas.toDataURL());
+  await page.getByRole('button', { name: 'Sparkle the gingerbread icing' }).press('Enter');
+  await page.getByRole('button', { name: 'Dust the Christmas cake with sugar' }).press('Enter');
+  expect(
+    await page.locator('#animation').evaluate((canvas: HTMLCanvasElement) => canvas.toDataURL()),
+  ).toBe(frame);
+});
+
 test('visit the feast by touch or mouse, then return with living-room state intact', async ({
   page,
 }, testInfo) => {

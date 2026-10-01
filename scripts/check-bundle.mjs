@@ -39,6 +39,14 @@ try {
   await page.getByRole('button', { name: 'Return to the living room', exact: true }).waitFor();
   await page.locator('#landscape').evaluate((image) => image.decode());
   assert.equal(await page.locator('#world').getAttribute('data-scene'), 'party');
+  await page
+    .getByRole('button', { name: 'Sparkle the gingerbread icing', exact: true })
+    .press('Enter');
+  assert.equal(await page.locator('#world').getAttribute('data-last-action'), 'cookie-stars');
+  await page
+    .getByRole('button', { name: 'Dust the Christmas cake with sugar', exact: true })
+    .press('Enter');
+  assert.equal(await page.locator('#world').getAttribute('data-last-action'), 'cake-sugar');
   await page.getByRole('button', { name: 'Warm the table candlelight', exact: true }).click();
   await page.getByRole('button', { name: 'Return to the living room', exact: true }).click();
   await page.getByRole('button', { name: 'Tend the fire' }).waitFor();

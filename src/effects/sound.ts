@@ -1,4 +1,4 @@
-import type { Scene } from './animation';
+import type { Scene } from '../scenes/types';
 
 /** Original synthesized ambience; no network audio, microphone or sound assets.
  * The context is created only by the explicit sound-button gesture. */

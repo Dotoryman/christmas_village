@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.6.0 — 2026-10-01
+
+- Split scene configuration, scene painters, shared gestures and action handlers
+  into modules. Added a short guide for implementing new reactions.
+- Increased outdoor snowfall from 360 to 680 layered flakes.
+- Added gingerbread icing glints and a fading sugar dusting over the yule log.
+  Particle effects share the existing frame loop, budget and reduced-motion rules.
+- Preserved navigation, light states, frost, sound and the original artwork.
+
 ## 0.5.0 — 2026-09-30
 
 - Added a portrait Christmas feast scene with roast turkey, gingerbread, a yule

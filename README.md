@@ -19,6 +19,7 @@ A small world of warm lights and snowy surprises. Take your time.
 - **Bring the tree to life.** Hold it to light the branches from bottom to star.
 - **Step inside.** Wipe frost from the window, warm your cocoa, and settle beside the fire.
 - **Join the feast.** Touch the little table to discover a Christmas spread, candlelight and steaming cocoa. The archway brings you back to the living room.
+- **Add a little sparkle.** Touch the gingerbread icing or dust the Christmas cake with sugar.
 - **Listen to winter.** Turn on the little speaker for wind, soft snow crunch and crackling wood.
 
 Tap the moon for a shooting-star wish. Come back outside whenever you like.
@@ -35,7 +36,7 @@ No accounts, tracking or visible instructions—just a little winter escape.
 ## Make it yours
 
 ```text
-src/       Scenes, artwork and effects
+src/       App, scene modules, artwork and effects
 public/    Sharing image and web headers
 ios/       Offline iOS wrapper
 scripts/   Build helpers

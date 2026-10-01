@@ -13,8 +13,10 @@ Open `http://127.0.0.1:5173`. The included WebP artwork is ready to use.
 
 | Location | Purpose |
 | --- | --- |
-| `src/main.ts` | Scene state, touch controls and doorway transitions |
-| `src/scene-config.ts` | Portrait artwork, hotspots and light masks |
+| `src/main.ts` | App entry |
+| `src/app/` | Scene transitions, reusable gestures and action registry |
+| `src/scenes/` | One configuration and painter per scene; artwork, hotspots and masks |
+| `src/scene-config.ts` | Scene registry shared by the app |
 | `src/effects/` | Shared animation loop, atmosphere, glass frost and sound |
 | `src/assets/`, `public/` | Runtime artwork, favicon and sharing image |
 | `scripts/`, `tests/` | Build helpers and browser/offline checks |
@@ -26,6 +28,21 @@ when hidden and freezes decorative motion when reduced motion is enabled.
 Code comments explain masks, gestures, timing and audio resource ownership.
 The cabin's small table opens the feast scene; its open archway returns to the
 living room. Each scene owns its own hotspots and preserves existing room states.
+
+## Add a reaction
+
+1. Add the object's named hotspot to `src/scenes/outside.ts`, `inside.ts` or `party.ts`.
+   Coordinates are percentages of the original portrait, not screen pixels.
+2. Implement the effect in `src/effects/`. `feast.ts` is a small particle example.
+3. Register a matching action ID in `src/app/actions.ts`. Use `engine.emit()` for
+   particles; it handles reduced motion, the particle budget and their lifetime.
+
+For continuous effects, edit the scene's `*-effects.ts` painter. It receives the
+shared canvas, clock and drawing services; never create another animation loop.
+Keep navigation, pointer capture and audio ownership in the shared app modules.
+`src/scenes/types.ts` documents the scene interface, and `painters.ts` registers
+the drawing functions. Generated `ios/ChristmasVillage/Web/index.html` is a build
+output; always edit TypeScript sources and regenerate it with `npm run ios:sync`.
 
 ## Checks and formatting
 

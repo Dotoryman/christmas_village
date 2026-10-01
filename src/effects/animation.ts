@@ -1,28 +1,10 @@
 import fireArt from '../assets/inside.webp';
 import outsideArt from '../assets/outside.webp';
-import { wisp, windowSnow, branchSway, starShimmer } from './atmosphere';
-export type Scene = 'outside' | 'inside' | 'party';
-export interface AnimationState {
-  scene: Scene;
-  lit: (id: string) => boolean;
-  cocoaUntil: number;
-  candleUntil: number;
-  reduced: boolean;
-}
-type Particle = {
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  life: number;
-  age: number;
-  size: number;
-  kind: 'snow' | 'spark' | 'clump';
-  phase: number;
-  delay?: number;
-};
+import { painters } from '../scenes/painters';
+import type { AnimationState, Particle, ScenePainter } from './types';
+export type { AnimationState } from './types';
 type Flake = { x: number; y: number; depth: number; phase: number };
-const random = (a: number, b: number) => a + Math.random() * (b - a);
+import { random } from './math';
 
 /** One bounded canvas loop. Coordinates are normalized to the portrait art. */
 export class VillageAnimation {
@@ -41,7 +23,7 @@ export class VillageAnimation {
   private glowSprites = new Map<string, HTMLCanvasElement>();
   // Dense distant flakes establish snowfall; larger near flakes stay sparse so
   // the artwork remains readable. Sprite glows are cached rather than blurred.
-  private snow: Flake[] = Array.from({ length: 360 }, () => ({
+  private snow: Flake[] = Array.from({ length: 680 }, () => ({
     x: Math.random(),
     y: Math.random(),
     depth: Math.pow(Math.random(), 1.6) * 0.85 + 0.15,
@@ -130,6 +112,11 @@ export class VillageAnimation {
   makeWish() {
     if (!this.state.reduced) this.starAge = 0;
   }
+  /** Effects supply particles; one shared loop owns their lifetime and budget. */
+  emit(particles: Particle[]) {
+    if (this.state.reduced) return;
+    this.particles = [...this.particles, ...particles].slice(-240);
+  }
   destroy() {
     this.stop();
     this.observer.disconnect();
@@ -213,14 +200,55 @@ export class VillageAnimation {
     ctx.drawImage(sprite, px - r, py - r, r * 2, r * 2);
     ctx.globalAlpha = previous;
   }
+  private painter?: ScenePainter;
+  private sceneView(): ScenePainter {
+    if (!this.painter) {
+      const engine = this;
+      this.painter = {
+        get ctx() {
+          return engine.ctx;
+        },
+        get width() {
+          return engine.width;
+        },
+        get height() {
+          return engine.height;
+        },
+        get time() {
+          return engine.time;
+        },
+        get state() {
+          return engine.state;
+        },
+        get particles() {
+          return engine.particles;
+        },
+        get fireImage() {
+          return engine.fireImage;
+        },
+        get outsideImage() {
+          return engine.outsideImage;
+        },
+        get canvas() {
+          return engine.canvas;
+        },
+        get windUntil() {
+          return engine.windUntil;
+        },
+        glow: engine.glow.bind(engine),
+        drawTree: engine.drawTree.bind(engine),
+        drawSnow: engine.drawSnow.bind(engine),
+        drawShootingStar: engine.drawShootingStar.bind(engine),
+      };
+    }
+    return this.painter;
+  }
   private draw(dt: number) {
     const ctx = this.ctx;
     ctx.clearRect(0, 0, this.width, this.height);
     if (this.width < 1 || this.height < 1) return;
     if (this.treeAge >= 0) this.treeAge += dt;
-    if (this.state.scene === 'outside') this.drawOutside(dt);
-    else if (this.state.scene === 'inside') this.drawInside(dt);
-    else this.drawParty();
+    painters[this.state.scene](this.sceneView(), dt);
     if (!this.state.reduced) this.drawParticles(dt);
     this.afterDraw(
       this.state.reduced ? 0 : dt,
@@ -228,26 +256,8 @@ export class VillageAnimation {
     );
     if (this.treeAge > 3.9) this.treeAge = -1;
   }
-  private drawOutside(dt: number) {
-    const ctx = this.ctx,
-      t = this.time;
-    if (!this.state.reduced && this.outsideImage.complete && this.outsideImage.naturalWidth) {
-      branchSway(ctx, this.outsideImage, this.width, this.height, t, t < this.windUntil);
-      starShimmer(ctx, this.width, this.height, t);
-    }
-    ctx.globalCompositeOperation = 'screen';
-    if (this.state.lit('left-window')) this.glow(0.275, 0.505, 0.08, 0.055);
-    if (this.state.lit('right-window')) this.glow(0.67, 0.515, 0.07, 0.055);
-    if (this.state.lit('lantern')) this.glow(0.2, 0.698, 0.065, 0.09 + Math.sin(t * 3) * 0.018);
-    if (this.state.lit('tree')) this.drawTree(0.805, 0.41, 0.17, 0.28);
-    ctx.globalCompositeOperation = 'source-over';
-    if (!this.state.reduced) {
-      wisp(ctx, this.width, this.height, 0.31, 0.22, 0.16, t, 0.8, true);
-      this.drawShootingStar(dt);
-      this.drawSnow(dt);
-    } else this.canvas.dataset.star = 'still';
-  }
   private drawSnow(dt: number) {
+    this.canvas.dataset.snowCount = String(this.snow.length);
     const ctx = this.ctx,
       t = this.time;
     const gust = t < this.windUntil ? Math.sin(((this.windUntil - t) / 3) * Math.PI) * 0.035 : 0;
@@ -321,107 +331,6 @@ export class VillageAnimation {
       this.glow(cx, top, 0.055, pulse * 0.22);
     }
   }
-  private drawInside(dt: number) {
-    const ctx = this.ctx,
-      t = this.time;
-    this.canvas.dataset.star = 'hidden';
-    if (!this.state.reduced) windowSnow(ctx, this.width, this.height, t);
-    ctx.globalCompositeOperation = 'screen';
-    if (this.state.lit('tree')) this.drawTree(0.13, 0.28, 0.18, 0.34);
-    if (this.state.lit('candle')) this.glow(0.318, 0.322, 0.035, 0.14 + Math.sin(t * 4) * 0.025);
-    const boost = this.state.lit('fire') ? 1.25 : 0.85;
-    this.glow(
-      0.425,
-      0.565,
-      0.22,
-      (0.07 + 0.016 * Math.sin(t * 2.8) + 0.008 * Math.sin(t * 7)) * boost,
-    );
-    ctx.globalCompositeOperation = 'source-over';
-    // Displace the original photographic fire in overlapping scanlines. This keeps
-    // the fine flame texture, with a small upward shimmer rather than solid shapes.
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(this.width * 0.318, this.height * 0.478, this.width * 0.225, this.height * 0.108);
-    ctx.clip();
-    if (this.fireImage.complete && this.fireImage.naturalWidth) {
-      const art = this.fireImage,
-        y0 = 0.478,
-        y1 = 0.586,
-        step = 2 / this.height;
-      for (let y = y0; y < y1; y += step) {
-        const strength = y > 0.512 && y < 0.574 ? Math.sin(((y - 0.512) / 0.062) * Math.PI) : 0;
-        const shift = this.state.reduced
-          ? 0
-          : Math.sin(t * 5.1 + y * 85) * this.width * 0.0017 * strength;
-        const rise = this.state.reduced
-          ? 0
-          : Math.sin(t * 3.8 + y * 34) * this.height * 0.0011 * strength;
-        ctx.drawImage(
-          art,
-          art.width * 0.318,
-          art.height * y,
-          art.width * 0.225,
-          art.height * (step + 0.001),
-          this.width * 0.318 + shift,
-          this.height * y + rise,
-          this.width * 0.225,
-          this.height * (step + 0.001),
-        );
-      }
-      ctx.globalCompositeOperation = 'screen';
-      this.glow(0.425, 0.563, 0.065, 0.03 * boost + 0.012 * Math.sin(t * 8));
-      ctx.globalCompositeOperation = 'source-over';
-    }
-    if (!this.state.reduced && Math.random() < dt * 2.4)
-      this.particles.push({
-        x: random(0.35, 0.51),
-        y: 0.56,
-        vx: random(-0.007, 0.007),
-        vy: random(-0.07, -0.035),
-        life: random(0.5, 1.1),
-        age: 0,
-        size: random(0.4, 0.9),
-        kind: 'spark',
-        phase: 0,
-      });
-    ctx.restore();
-    if (!this.state.reduced) {
-      const cocoa = performance.now() < this.state.cocoaUntil ? 1.7 : 1;
-      wisp(ctx, this.width, this.height, 0.547, 0.665, 0.052 * cocoa, t, cocoa);
-      ctx.globalCompositeOperation = 'screen';
-      for (let i = 0; i < 18; i++) {
-        const age = (t * 0.009 + i * 0.071) % 1;
-        const x = 0.28 + ((i * 0.131) % 0.5) + Math.sin(t * 0.18 + i) * 0.009;
-        this.glow(x, 0.72 - age * 0.39, 0.003, Math.sin(age * Math.PI) * 0.11, '255,219,156');
-      }
-      ctx.globalCompositeOperation = 'source-over';
-    }
-  }
-  /** Glows sit on the photographed flames; steam rises only from the two mugs.
-   * The feast has its own coordinates, never borrowing the living-room masks. */
-  private drawParty() {
-    const ctx = this.ctx,
-      t = this.time;
-    this.canvas.dataset.star = 'hidden';
-    const boost = performance.now() < this.state.candleUntil ? 1.7 : 1;
-    ctx.globalCompositeOperation = 'screen';
-    for (const [x, y, phase] of [
-      [0.409, 0.334, 0],
-      [0.521, 0.294, 2],
-      [0.589, 0.344, 4],
-    ]) {
-      const flicker = this.state.reduced
-        ? 0
-        : Math.sin(t * 3.1 + phase) * 0.012 + Math.sin(t * 5.7 + phase) * 0.006;
-      this.glow(x, y, 0.039, (0.075 + flicker) * boost);
-    }
-    ctx.globalCompositeOperation = 'source-over';
-    if (!this.state.reduced) {
-      const cocoa = performance.now() < this.state.cocoaUntil ? 1.55 : 1;
-      wisp(ctx, this.width, this.height, 0.162, 0.574, 0.052 * cocoa, t, cocoa);
-      wisp(ctx, this.width, this.height, 0.895, 0.625, 0.052 * cocoa, t + 3, cocoa);
-    }
-  }
   private drawParticles(dt: number) {
     this.particles = this.particles.filter((p) => p.age < p.life);
     this.canvas.dataset.particles = String(this.particles.length);
@@ -437,6 +346,20 @@ export class VillageAnimation {
       const alpha = Math.min(1, p.age / 0.08) * Math.max(0, Math.min(1, (p.life - p.age) / 0.45));
       const x = p.x * this.width,
         y = p.y * this.height;
+      if (p.kind === 'icing') {
+        // Short crossing rays catch the icing's light without moving the cookie.
+        const r = p.size * 2;
+        this.ctx.strokeStyle = `rgba(255,244,214,${alpha * 0.8})`;
+        this.ctx.lineWidth = 0.6;
+        this.ctx.beginPath();
+        this.ctx.moveTo(x - r, y);
+        this.ctx.lineTo(x + r, y);
+        this.ctx.moveTo(x, y - r);
+        this.ctx.lineTo(x, y + r);
+        this.ctx.stroke();
+        this.glow(p.x, p.y, 0.009, alpha * 0.12, '255,244,214');
+        continue;
+      }
       if (p.kind === 'clump') {
         this.ctx.save();
         this.ctx.translate(x, y);
@@ -460,7 +383,11 @@ export class VillageAnimation {
       this.ctx.beginPath();
       this.ctx.arc(x, y, p.size, 0, Math.PI * 2);
       this.ctx.fillStyle =
-        p.kind === 'snow' ? `rgba(235,246,255,${alpha * 0.65})` : `rgba(255,203,106,${alpha})`;
+        p.kind === 'sugar'
+          ? `rgba(255,245,224,${alpha * 0.8})`
+          : p.kind === 'snow'
+            ? `rgba(235,246,255,${alpha * 0.65})`
+            : `rgba(255,203,106,${alpha})`;
       this.ctx.fill();
       if (p.kind === 'snow' && p.size > 3)
         this.glow(p.x, p.y, (p.size / this.width) * 2, alpha * 0.17, '235,245,255');

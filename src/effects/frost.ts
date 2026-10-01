@@ -1,4 +1,4 @@
-import type { Scene } from './animation';
+import type { Scene } from '../scenes/types';
 type Point = { x: number; y: number };
 type Stroke = { points: Point[]; age: number };
 const panes = [
