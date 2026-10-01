@@ -1,4 +1,6 @@
 import { feastParticles } from '../effects/feast';
+import { celebrationParticles } from '../effects/celebration';
+import type { WinterSound } from '../effects/sound';
 import type { AnimationState } from '../effects/types';
 import type { VillageAnimation } from '../effects/animation';
 import type { Scene } from '../scenes/types';
@@ -6,13 +8,14 @@ import type { Scene } from '../scenes/types';
 type Services = {
   engine: VillageAnimation;
   state: AnimationState;
+  sound: WinterSound;
   travel: (scene: Scene) => void;
   openGift: () => void;
 };
 
 /** Add a named reaction here and a hotspot in its scene file. Navigation and
  * pointer capture remain shared; reactions never start an extra animation loop. */
-export function createActions({ engine, state, travel, openGift }: Services) {
+export function createActions({ engine, state, sound, travel, openGift }: Services) {
   const cocoa = () => {
     state.cocoaUntil = performance.now() + 3500;
   };
@@ -37,5 +40,16 @@ export function createActions({ engine, state, travel, openGift }: Services) {
     moon: () => engine.makeWish(),
     'cookie-stars': () => engine.emit(feastParticles('cookies')),
     'cake-sugar': () => engine.emit(feastParticles('cake')),
+    'glass-chime': () => {
+      engine.emit(celebrationParticles('glass'));
+      sound.chime();
+    },
+    'party-gift': () => {
+      engine.emit(celebrationParticles('gift'));
+      sound.chime(0.8);
+    },
+    fire: () => {
+      if (state.lit('fire')) engine.emit(celebrationParticles('hearth'));
+    },
   } satisfies Record<string, () => void>;
 }

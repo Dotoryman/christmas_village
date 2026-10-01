@@ -10,6 +10,7 @@ export class WinterSound {
   private grainNoise?: AudioBuffer;
   private timer?: ReturnType<typeof setInterval>;
   private enabled = false;
+  private nextChime = 0;
   private scene: Scene = 'outside';
   constructor(private button: HTMLButtonElement) {
     button.onclick = () => {
@@ -155,5 +156,34 @@ export class WinterSound {
   }
   snowTouch() {
     if (this.scene === 'outside') this.grain(0.24, 0.16, 420);
+  }
+  /** A quiet struck-glass tone with decaying partials. It uses the existing
+   * gesture-enabled context; muted taps never create or resume audio. */
+  chime(pitch = 1) {
+    if (!this.enabled || this.context?.state !== 'running') return;
+    const context = this.context,
+      now = context.currentTime;
+    if (now < this.nextChime) return;
+    this.nextChime = now + 0.15;
+    for (const [ratio, volume] of [
+      [1, 0.1],
+      [2.76, 0.035],
+      [5.4, 0.012],
+    ]) {
+      const oscillator = context.createOscillator(),
+        gain = context.createGain();
+      oscillator.frequency.value = 880 * pitch * ratio;
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(volume, now + 0.006);
+      gain.gain.exponentialRampToValueAtTime(0.00001, now + 1.3);
+      oscillator.connect(gain).connect(this.master!);
+      oscillator.start(now);
+      oscillator.stop(now + 1.35);
+      oscillator.onended = () => {
+        oscillator.disconnect();
+        gain.disconnect();
+      };
+    }
+    this.button.dataset.lastSound = 'chime';
   }
 }

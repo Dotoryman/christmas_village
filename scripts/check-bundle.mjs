@@ -47,6 +47,11 @@ try {
     .getByRole('button', { name: 'Dust the Christmas cake with sugar', exact: true })
     .press('Enter');
   assert.equal(await page.locator('#world').getAttribute('data-last-action'), 'cake-sugar');
+  await page.getByRole('button', { name: 'Ring the crystal glass', exact: true }).click();
+  assert.equal(await page.locator('#world').getAttribute('data-last-action'), 'glass-chime');
+  assert.equal(await page.locator('#sound').getAttribute('data-last-sound'), 'chime');
+  await page.getByRole('button', { name: 'Discover the table gift', exact: true }).click();
+  assert.equal(await page.locator('#world').getAttribute('data-last-action'), 'party-gift');
   await page.getByRole('button', { name: 'Warm the table candlelight', exact: true }).click();
   await page.getByRole('button', { name: 'Return to the living room', exact: true }).click();
   await page.getByRole('button', { name: 'Tend the fire' }).waitFor();

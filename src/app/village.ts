@@ -10,6 +10,10 @@ import '../style.css';
 const app = document.querySelector<HTMLDivElement>('#app')!;
 app.innerHTML = `<main id="world" aria-label="Christmas Village"><div id="ambient" aria-hidden="true"></div><div id="stage"><img id="landscape" alt="" draggable="false"><div id="plates" aria-hidden="true"></div><canvas id="animation" aria-hidden="true"></canvas><canvas id="surfaces" aria-hidden="true"></canvas><div id="targets"></div><button id="sound" aria-label="Enable winter sounds" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="waves" d="M16 8c2 2 2 6 0 8m3-11c4 4 4 10 0 14"/><path class="slash" d="M16 9l5 6m0-6l-5 6"/></svg></button></div><div id="fade" aria-hidden="true"></div></main>`;
 const world = document.querySelector<HTMLElement>('#world')!;
+// Suppress browser image-save menus and dragging, without cancelling the touch
+// events used by tree holds, glass wiping and foreground snow sweeps.
+world.addEventListener('contextmenu', (event) => event.preventDefault());
+world.addEventListener('dragstart', (event) => event.preventDefault());
 const stage = document.querySelector<HTMLDivElement>('#stage')!;
 const landscape = document.querySelector<HTMLImageElement>('#landscape')!;
 const ambient = document.querySelector<HTMLDivElement>('#ambient')!;
@@ -211,6 +215,7 @@ async function travel(next: Scene) {
 // Actions are registered separately from rendering and navigation.
 const actions: Record<string, () => void> = createActions({
   engine,
+  sound,
   state: animationState,
   travel: (next) => {
     void travel(next);
@@ -230,7 +235,8 @@ function interact(target: Target, button: HTMLButtonElement) {
     lightStates.set(stateKey(target.id), on);
     button.setAttribute('aria-pressed', String(on));
     plates.querySelector<HTMLElement>(`[data-plate="${target.id}"]`)?.classList.toggle('off', !on);
-  } else actions[target.id]?.();
+  }
+  actions[target.id]?.();
   if (animationState.reduced) engine.start();
 }
 function applyMotion() {

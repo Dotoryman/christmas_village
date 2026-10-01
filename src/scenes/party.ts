@@ -17,5 +17,7 @@ export const party: SceneDefinition = {
     { id: 'party-cocoa-right', name: 'Warm the right festive cocoa', x: 80, y: 61, w: 19, h: 11 },
     { id: 'cookie-stars', name: 'Sparkle the gingerbread icing', x: 3, y: 72, w: 40, h: 11 },
     { id: 'cake-sugar', name: 'Dust the Christmas cake with sugar', x: 54, y: 75, w: 44, h: 16 },
+    { id: 'glass-chime', name: 'Ring the crystal glass', x: 22, y: 39, w: 12, h: 8 },
+    { id: 'party-gift', name: 'Discover the table gift', x: 25, y: 48, w: 14, h: 7 },
   ],
 };

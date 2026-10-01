@@ -14,6 +14,9 @@ body,
   overflow: hidden;
 }
 #world {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
   position: relative;
   width: 100%;
   height: 100dvh;
@@ -58,6 +61,8 @@ body,
   width: 100%;
   height: 100%;
   user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
   pointer-events: none;
 }
 #plates,

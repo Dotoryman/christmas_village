@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.7.0 — 2026-10-01
+
+- Added crystal-glass rim glints, a gentle synthesized chime, golden table-gift
+  sparkles and a short ember burst when tending the living-room fire.
+- Chimes use the existing sound context, respect mute and clean up after playback.
+- Suppressed image context menus, dragging and iOS touch callouts without
+  cancelling the touch gestures used by tree holds, frost and snow sweeping.
+  This prevents the browser save UI, not copying publicly served image data.
+
 ## 0.6.0 — 2026-10-01
 
 - Split scene configuration, scene painters, shared gestures and action handlers
